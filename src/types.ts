@@ -48,6 +48,7 @@ export interface DocumentUpload {
 }
 
 export interface CandidateProfile {
+  id?: string;
   // Personal Info
   profilePhoto: string; // Base64 or URL
   firstName: string;
@@ -64,6 +65,9 @@ export interface CandidateProfile {
   country: string;
   postalCode: string;
 
+  // Timestamps
+  createdAt?: string;
+  
   // Professional Info
   currentDesignation: string;
   currentCompany: string;
@@ -124,6 +128,25 @@ export interface CandidateProfile {
   weaknesses: string;
   achievements: string;
   hobbies: string;
+
+  // Added Features
+  primaryNumber?: string;
+  countryLookingFor?: string;
+  jobPreference?: string;
+  skill?: string;
+  passportAvailable?: string;
+  whatsappNumber?: string;
+  whatsappSameAsPrimary?: boolean;
+  familyMemberNumber?: string;
+  source?: string;
+  jobDurationPreference?: string;
+  serviceChargesStatus?: string;
+  bestTimeToContact?: string;
+  interestLevel?: string;
+  nextFollowUpDate?: string;
+  assignedToHR?: string;
+  telemarketerNotes?: string;
+  voiceRecordingLegacy?: DocumentUpload | null;
 
   // Declarations
   declaredTrue: boolean;

@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // Types and Mocks
 import { CandidateProfile, ApplicationStatus, UserState } from './types';
-import { INITIAL_MOCK_PROFILE, EMPTY_PROFILE } from './mockData';
+import { INITIAL_MOCK_PROFILE, EMPTY_PROFILE, MOCK_CANDIDATES } from './mockData';
 
 // Pages and Core Components
 import Login from './pages/Login';
@@ -30,6 +30,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import CandidateFormPage from './pages/CandidateFormPage';
 import ProfilePreviewPage from './pages/ProfilePreviewPage';
+import CandidatesTablePage from './pages/CandidatesTablePage';
 
 export default function App() {
   // Navigation & UI States
@@ -69,6 +70,29 @@ export default function App() {
     }
     return INITIAL_MOCK_PROFILE; // Preload with Alex Mercer's beautiful sample dossier
   });
+
+  const [candidates, setCandidates] = useState<CandidateProfile[]>(() => {
+    const saved = localStorage.getItem('nexhire_candidates');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return MOCK_CANDIDATES;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('nexhire_candidates', JSON.stringify(candidates));
+  }, [candidates]);
+
+  // Edit / View logic
+  const handleEditCandidate = (candidate: CandidateProfile) => {
+    setProfile(candidate);
+    setActivePage('form');
+  };
+
+  const handleViewCandidate = (candidate: CandidateProfile) => {
+    setProfile(candidate);
+    setActivePage('preview');
+  };
 
   // Notification State
   const [notifications, setNotifications] = useState(() => {
@@ -247,7 +271,6 @@ export default function App() {
             setIsOpen={setIsMobileSidebarOpen}
             isCollapsed={isSidebarCollapsed}
             setIsCollapsed={setIsSidebarCollapsed}
-            unreadNotificationsCount={unreadNotificationsCount}
           />
 
           {/* Main Workspace Frame */}
@@ -282,17 +305,6 @@ export default function App() {
                   </span>
                 </div>
                 
-                {/* Mini notification icon */}
-                <button
-                  onClick={() => setActivePage('notifications')}
-                  className="relative p-2 hover:bg-slate-100 rounded-xl text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-                  title="Notifications Log"
-                >
-                  <Bell className="w-[18px] h-[18px]" />
-                  {unreadNotificationsCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-                  )}
-                </button>
               </div>
             </header>
 
@@ -302,14 +314,8 @@ export default function App() {
               {/* Conditional Routing Pages */}
               {activePage === 'dashboard' && (
                 <Dashboard
-                  candidateName={profile.firstName}
-                  profile={profile}
-                  profileStatus={user.profileStatus}
-                  applicationStatus={user.applicationStatus}
-                  completionPercentage={currentCompletionPercentage}
+                  candidates={candidates}
                   setActivePage={setActivePage}
-                  onClearForm={handleClearForm}
-                  onLoadSample={handleLoadSample}
                 />
               )}
 
@@ -334,147 +340,15 @@ export default function App() {
                 />
               )}
 
-              {activePage === 'notifications' && (
-                <div className="space-y-6 text-left" id="notifications-page">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Security Notifications Log</h1>
-                      <p className="text-slate-500 text-xs mt-1">Audit log of system synchronizations and recruitment process triggers.</p>
-                    </div>
-                    {unreadNotificationsCount > 0 && (
-                      <button
-                        onClick={handleMarkAllNotificationsRead}
-                        className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-                      >
-                        Mark all as read
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="glass-panel rounded-2xl overflow-hidden divide-y divide-slate-100">
-                    {notifications.map((notif) => (
-                      <div 
-                        key={notif.id} 
-                        className={`p-5 flex space-x-4 transition-colors duration-200 ${
-                          notif.read ? 'bg-slate-50/20' : 'bg-blue-50/30'
-                        }`}
-                      >
-                        <div className={`p-2.5 rounded-xl shrink-0 ${
-                          notif.read ? 'bg-slate-100 text-slate-400' : 'bg-blue-50 text-blue-600'
-                        }`}>
-                          <Bell className="w-5 h-5" />
-                        </div>
-                        <div className="space-y-1 overflow-hidden flex-1">
-                          <div className="flex justify-between items-baseline">
-                            <h4 className="text-sm font-bold text-slate-800">{notif.title}</h4>
-                            <span className="text-[10px] text-slate-400 font-mono shrink-0">{notif.date}</span>
-                          </div>
-                          <p className="text-xs text-slate-600 leading-relaxed">{notif.message}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {activePage === 'candidates' && (
+                <CandidatesTablePage
+                  candidates={candidates}
+                  onEdit={handleEditCandidate}
+                  onView={handleViewCandidate}
+                />
               )}
 
-              {activePage === 'settings' && (
-                <div className="space-y-6 text-left" id="settings-page">
-                  <div>
-                    <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">Portal Configuration</h1>
-                    <p className="text-slate-500 text-xs mt-1">Configure secure local keys, biometrics simulation, and candidate notifications.</p>
-                  </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* General Settings */}
-                    <div className="lg:col-span-2 glass-panel p-6 rounded-2xl space-y-6">
-                      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">Dossier Account Settings</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                          <div className="space-y-0.5">
-                            <h4 className="text-xs font-bold text-slate-800">Email System Alerts</h4>
-                            <p className="text-[10px] text-slate-500">Send immediate HR interview milestones to candidate email.</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            checked={settings.notificationsEnabled}
-                            onChange={(e) => setSettings(prev => ({ ...prev, notificationsEnabled: e.target.checked }))}
-                            className="rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                          <div className="space-y-0.5">
-                            <h4 className="text-xs font-bold text-slate-800">Evaluation SMS Ping Alerts</h4>
-                            <p className="text-[10px] text-slate-500">Enable real-time SMS evaluations if candidate matches HR scorecard.</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            checked={settings.evaluationSMSAlerts}
-                            onChange={(e) => setSettings(prev => ({ ...prev, evaluationSMSAlerts: e.target.checked }))}
-                            className="rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
-                          <div className="space-y-0.5">
-                            <h4 className="text-xs font-bold text-slate-800">Simulate Biometric Dossier Verification</h4>
-                            <p className="text-[10px] text-slate-500">Require face mapping checks during evaluation lock engagement.</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            checked={settings.biometricsSimulation}
-                            onChange={(e) => setSettings(prev => ({ ...prev, biometricsSimulation: e.target.checked }))}
-                            className="rounded border-slate-300 bg-white text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="pt-4 border-t border-slate-100 flex justify-end">
-                        <button
-                          onClick={() => showToast('Configurations successfully verified.')}
-                          className="gradient-btn py-2 px-5 rounded-xl text-white text-xs font-semibold cursor-pointer"
-                        >
-                          Save Configurations
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Developer Sandbox side details */}
-                    <div className="glass-panel p-6 rounded-2xl flex flex-col justify-between">
-                      <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider font-mono">Dossier Keys & Token</h3>
-                        
-                        <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
-                          <span className="text-[9px] text-slate-500 font-mono uppercase block">Active Encryption Core:</span>
-                          <span className="text-[11px] font-mono text-slate-700 font-bold block truncate">AES_256_GCM_NEXHIRE_LOCK</span>
-                        </div>
-
-                        <div className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl space-y-2">
-                          <span className="text-[9px] text-slate-500 font-mono uppercase block">Authorized Portal Client:</span>
-                          <span className="text-[11px] font-mono text-slate-700 font-bold block truncate">demo@company.com</span>
-                        </div>
-                      </div>
-
-                      <div className="pt-4 mt-6 border-t border-slate-900">
-                        <button
-                          onClick={() => {
-                            if (window.confirm('Erase all portal keys and reset to initial template?')) {
-                              localStorage.removeItem('nexhire_candidate_profile');
-                              localStorage.removeItem('nexhire_user');
-                              window.location.reload();
-                            }
-                          }}
-                          className="w-full py-2.5 bg-rose-500/10 hover:bg-rose-500/15 border border-rose-500/20 text-rose-400 hover:text-rose-300 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center space-x-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          <span>Erase Cache & Reload</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
             </main>
           </div>

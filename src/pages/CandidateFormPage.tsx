@@ -19,7 +19,11 @@ import {
   MapPin,
   Save,
   Eye,
-  AlertCircle
+  AlertCircle,
+  Globe,
+  MessageSquare,
+  Clock,
+  Mic
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -264,8 +268,41 @@ export default function CandidateFormPage({
     triggerToast(`Removed document`);
   };
 
+
+  const handleWhatsAppChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '');
+    if (val.length <= 10) {
+      handleTextChange('whatsappNumber', val);
+    }
+  };
+
+  const handlePrimaryNumberChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '');
+    if (val.length <= 10) {
+      handleTextChange('primaryNumber', val);
+      if (profile.whatsappSameAsPrimary) {
+        handleTextChange('whatsappNumber', val);
+      }
+    }
+  };
+
+  const handleFamilyNumberChange = (e) => {
+    const val = e.target.value.replace(/\D/g, '');
+    if (val.length <= 10) {
+      handleTextChange('familyMemberNumber', val);
+    }
+  };
+
+  const toggleSameAsPrimary = (e) => {
+    const checked = e.target.checked;
+    handleTextChange('whatsappSameAsPrimary', checked);
+    if (checked) {
+      handleTextChange('whatsappNumber', profile.primaryNumber || '');
+    }
+  };
+
   return (
-    <div className="space-y-6 text-left relative" id="candidate-form-container">
+    <div className="w-full bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-10 text-left space-y-10" id="candidate-form-container">
       
       {/* Toast Notification */}
       <AnimatePresence>
@@ -292,52 +329,23 @@ export default function CandidateFormPage({
             Ensure complete and accurate entries for optimal processing. All draft data is stored locally.
           </p>
         </div>
-        <div className="flex space-x-2 shrink-0">
-          <button
-            onClick={expandAll}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-          >
-            Expand All
-          </button>
-          <button
-            onClick={collapseAll}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-          >
-            Collapse All
-          </button>
-        </div>
+        
       </div>
 
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-6" id="dossier-full-form">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-10" id="dossier-full-form">
         
         {/* SECTION 1: Personal Information */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('personal')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <User className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-850 font-display">Personal Information</h2>
-                <p className="text-[11px] text-slate-600">Contact detail registry and home address verification</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <User className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Personal Information</h2>
             </div>
-            {expanded.personal ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Contact detail registry and home address verification</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.personal && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
                   
                   {/* Photo url placeholder */}
@@ -532,39 +540,20 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 2: Professional Information */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('professional')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <Briefcase className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Professional Information</h2>
-                <p className="text-[11px] text-slate-600">Current title, experience timeline, CTC numbers, and availability</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Briefcase className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Professional Information</h2>
             </div>
-            {expanded.professional ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Current title, experience timeline, CTC numbers, and availability</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.professional && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
                   
                   <div className="space-y-1.5">
@@ -718,39 +707,20 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 3: Education */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('education')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Education</h2>
-                <p className="text-[11px] text-slate-600">Standard schooling benchmarks and higher university degrees</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <GraduationCap className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Education</h2>
             </div>
-            {expanded.education ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Standard schooling benchmarks and higher university degrees</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.education && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-6">
                   
                   {/* Static School fields */}
@@ -859,7 +829,7 @@ export default function CandidateFormPage({
                             </button>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left pr-6">
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">Degree/Qualification</label>
                                 <input
                                   type="text"
@@ -870,7 +840,7 @@ export default function CandidateFormPage({
                                 />
                               </div>
 
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">Department / Branch</label>
                                 <input
                                   type="text"
@@ -881,7 +851,7 @@ export default function CandidateFormPage({
                                 />
                               </div>
 
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">College / Institute</label>
                                 <input
                                   type="text"
@@ -892,7 +862,7 @@ export default function CandidateFormPage({
                                 />
                               </div>
 
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">University</label>
                                 <input
                                   type="text"
@@ -903,7 +873,7 @@ export default function CandidateFormPage({
                                 />
                               </div>
 
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">CGPA / Final Grade</label>
                                 <input
                                   type="text"
@@ -914,7 +884,7 @@ export default function CandidateFormPage({
                                 />
                               </div>
 
-                              <div className="space-y-1">
+                              <div className="mb-6">
                                 <label className="text-[10px] text-slate-600 font-mono block font-medium">Graduation Year</label>
                                 <input
                                   type="text"
@@ -933,39 +903,20 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 4: Technical Skills */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('skills')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Technical Skills</h2>
-                <p className="text-[11px] text-slate-600">Core technologies, frameworks, tools, and languages classification</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Cpu className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Technical Skills</h2>
             </div>
-            {expanded.skills ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Core technologies, frameworks, tools, and languages classification</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.skills && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
                   
                   <div className="space-y-1.5">
@@ -1079,39 +1030,20 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 5: Projects */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('projects')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <FolderGit className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Projects</h2>
-                <p className="text-[11px] text-slate-600">Key engineering projects, technologies deployed, and link endpoints</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <FolderGit className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Projects</h2>
             </div>
-            {expanded.projects ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Key engineering projects, technologies deployed, and link endpoints</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.projects && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-5 text-left">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono font-semibold">Custom Project Registry</h3>
@@ -1147,7 +1079,7 @@ export default function CandidateFormPage({
                           </button>
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left pr-6">
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Project Name</label>
                               <input
                                 type="text"
@@ -1158,7 +1090,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Your Role</label>
                               <input
                                 type="text"
@@ -1169,7 +1101,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Duration</label>
                               <input
                                 type="text"
@@ -1191,7 +1123,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">GitHub Repository Link</label>
                               <input
                                 type="text"
@@ -1202,7 +1134,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Live Project Endpoint</label>
                               <input
                                 type="text"
@@ -1242,39 +1174,20 @@ export default function CandidateFormPage({
                   )}
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 6: Work Experience */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('work')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <Briefcase className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Work Experience</h2>
-                <p className="text-[11px] text-slate-600">Corporate employment records, leadership titles, and reason for exits</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Briefcase className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Work Experience</h2>
             </div>
-            {expanded.work ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Corporate employment records, leadership titles, and reason for exits</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.work && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-5 text-left">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono font-semibold">Professional Work Ledger</h3>
@@ -1310,7 +1223,7 @@ export default function CandidateFormPage({
                           </button>
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left pr-6">
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Company Name</label>
                               <input
                                 type="text"
@@ -1321,7 +1234,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Designation / Title</label>
                               <input
                                 type="text"
@@ -1332,7 +1245,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Employment Type</label>
                               <select
                                 value={work.employmentType}
@@ -1346,7 +1259,7 @@ export default function CandidateFormPage({
                               </select>
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Joining Date</label>
                               <input
                                 type="date"
@@ -1356,7 +1269,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Leaving Date</label>
                               <input
                                 type="text"
@@ -1407,39 +1320,20 @@ export default function CandidateFormPage({
                   )}
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 7: Certifications */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('certifications')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Certifications</h2>
-                <p className="text-[11px] text-slate-600">Professional credentials, certification bodies, and validation links</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Award className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Certifications</h2>
             </div>
-            {expanded.certifications ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Professional credentials, certification bodies, and validation links</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.certifications && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-5 text-left">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider font-mono font-semibold">Professional Certificates</h3>
@@ -1486,7 +1380,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Issuing Organization</label>
                               <input
                                 type="text"
@@ -1497,7 +1391,7 @@ export default function CandidateFormPage({
                               />
                             </div>
 
-                            <div className="space-y-1">
+                            <div className="mb-6">
                               <label className="text-[10px] text-slate-600 font-mono block font-medium">Completion Date</label>
                               <input
                                 type="date"
@@ -1524,39 +1418,20 @@ export default function CandidateFormPage({
                   )}
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 8: Documents */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('documents')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <UploadCloud className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Documents</h2>
-                <p className="text-[11px] text-slate-600">Mandatory legal card uploads and professional CV attachments</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <UploadCloud className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Documents</h2>
             </div>
-            {expanded.documents ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Mandatory legal card uploads and professional CV attachments</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.documents && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-6">
                   
                   <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl text-left flex items-start space-x-3 text-slate-700">
@@ -1634,39 +1509,20 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div></div>
 
         {/* SECTION 9: Additional Information */}
-        <div className="glass-panel rounded-2xl overflow-hidden transition-all">
-          <button
-            type="button"
-            onClick={() => toggleSection('additional')}
-            className="w-full px-6 py-4 flex items-center justify-between bg-slate-50/80 hover:bg-slate-100/80 border-b border-slate-200 transition-colors"
-          >
-            <div className="flex items-center space-x-3.5">
-              <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
-                <FileText className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 font-display">Additional Information</h2>
-                <p className="text-[11px] text-slate-600">Social developer handles, core career objectives, strengths, and hobbies</p>
-              </div>
+        
+        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <FileText className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Additional Information</h2>
             </div>
-            {expanded.additional ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
-          </button>
+            <p className="text-[13px] text-slate-500 ml-6">Social developer handles, core career objectives, strengths, and hobbies</p>
+          </div>
+          <div className="px-1">
 
-          <AnimatePresence initial={false}>
-            {expanded.additional && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="overflow-hidden"
-              >
                 <div className="p-6 space-y-6 text-left">
                   
                   {/* Social Handles */}
@@ -1800,9 +1656,301 @@ export default function CandidateFormPage({
                   </div>
 
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div></div>
+
+
+        {/* Added New Form Sections */}
+        <div className="space-y-6 pb-6 border-t border-slate-200 pt-6">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Globe className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Job Preference & Contact Details</h2>
+            </div>
+            <p className="text-[13px] text-slate-500 ml-6">Career preferences and contact information</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ml-7">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Country Looking For <span className="text-red-500">*</span></label>
+              <select
+                value={profile.countryLookingFor || ''}
+                onChange={(e) => handleTextChange('countryLookingFor', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select preferred country</option>
+                <option value="India">India</option>
+                <option value="UAE">UAE</option>
+                <option value="USA">USA</option>
+                <option value="UK">UK</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Job Preference <span className="text-red-500">*</span></label>
+              <select
+                value={profile.jobPreference || ''}
+                onChange={(e) => handleTextChange('jobPreference', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select job preference</option>
+                <option value="IT">IT</option>
+                <option value="Finance">Finance</option>
+                <option value="Healthcare">Healthcare</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Skill</label>
+              <select
+                value={profile.skill || ''}
+                onChange={(e) => handleTextChange('skill', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select or search skill</option>
+                <option value="React">React</option>
+                <option value="Node.js">Node.js</option>
+                <option value="Python">Python</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Passport Available <span className="text-red-500">*</span></label>
+              <select
+                value={profile.passportAvailable || ''}
+                onChange={(e) => handleTextChange('passportAvailable', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select option</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Primary Number <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={profile.primaryNumber || ''}
+                onChange={handlePrimaryNumberChange}
+                placeholder="Enter 10-digit mobile number"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Family Member Number</label>
+              <input
+                type="text"
+                value={profile.familyMemberNumber || ''}
+                onChange={handleFamilyNumberChange}
+                placeholder="Enter 10-digit mobile number"
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="space-y-2 xl:col-span-2">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold text-slate-700">WhatsApp Number</label>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={profile.whatsappSameAsPrimary || false}
+                    onChange={toggleSameAsPrimary}
+                    className="rounded text-red-600 focus:ring-red-500 h-4 w-4 border-slate-300"
+                  />
+                  <span className="text-sm text-slate-700 font-medium">Same as Primary</span>
+                </label>
+              </div>
+              <div className="flex">
+                <div className="relative">
+                  <select className="appearance-none rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 py-2.5 pl-3 pr-8 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="+91">+91</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  value={profile.whatsappNumber || ''}
+                  onChange={handleWhatsAppChange}
+                  disabled={profile.whatsappSameAsPrimary}
+                  placeholder="Enter 10-digit number"
+                  className={`flex-1 rounded-r-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${profile.whatsappSameAsPrimary ? 'opacity-70 cursor-not-allowed' : ''}`}
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Selected: India (+91) - Requires 10 digits</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="space-y-6 pb-6 border-t border-slate-200 pt-6">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <MessageSquare className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Assessment & Preferences</h2>
+            </div>
+            <p className="text-[13px] text-slate-500 ml-6">Candidate assessment and communication preferences</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 ml-7">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Source <span className="text-red-500">*</span></label>
+              <select
+                value={profile.source || ''}
+                onChange={(e) => handleTextChange('source', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select source</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Referral">Referral</option>
+                <option value="Job Board">Job Board</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Job Duration Preference <span className="text-red-500">*</span></label>
+              <select
+                value={profile.jobDurationPreference || ''}
+                onChange={(e) => handleTextChange('jobDurationPreference', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select preference</option>
+                <option value="Long Term">Long Term</option>
+                <option value="Short Term">Short Term</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Service Charges Status <span className="text-red-500">*</span></label>
+              <select
+                value={profile.serviceChargesStatus || ''}
+                onChange={(e) => handleTextChange('serviceChargesStatus', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select status</option>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Best Time to Contact <span className="text-red-500">*</span></label>
+              <select
+                value={profile.bestTimeToContact || ''}
+                onChange={(e) => handleTextChange('bestTimeToContact', e.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select time</option>
+                <option value="Morning">Morning</option>
+                <option value="Afternoon">Afternoon</option>
+                <option value="Evening">Evening</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="ml-7 space-y-2">
+            <label className="text-sm font-semibold text-slate-700">Interest Level <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button
+                type="button"
+                onClick={() => handleTextChange('interestLevel', 'More Interested')}
+                className={`py-3 px-4 rounded-lg border text-sm font-semibold transition-all ${profile.interestLevel === 'More Interested' ? 'bg-emerald-50 border-emerald-500 text-emerald-600 shadow-sm' : 'border-slate-200 text-emerald-500 hover:bg-slate-50'}`}
+              >
+                More Interested
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTextChange('interestLevel', 'Interested')}
+                className={`py-3 px-4 rounded-lg border text-sm font-semibold transition-all ${profile.interestLevel === 'Interested' ? 'bg-blue-50 border-blue-500 text-blue-600 shadow-sm' : 'border-slate-200 text-blue-500 hover:bg-slate-50'}`}
+              >
+                Interested
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTextChange('interestLevel', 'Somewhat Interested')}
+                className={`py-3 px-4 rounded-lg border text-sm font-semibold transition-all ${profile.interestLevel === 'Somewhat Interested' ? 'bg-yellow-50 border-yellow-500 text-yellow-600 shadow-sm' : 'border-slate-200 text-yellow-500 hover:bg-slate-50'}`}
+              >
+                Somewhat Interested
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTextChange('interestLevel', 'Not Interested')}
+                className={`py-3 px-4 rounded-lg border text-sm font-semibold transition-all ${profile.interestLevel === 'Not Interested' ? 'bg-red-50 border-red-500 text-red-600 shadow-sm' : 'border-slate-200 text-red-500 hover:bg-slate-50'}`}
+              >
+                Not Interested
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6 pb-6 border-t border-slate-200 pt-6">
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 text-slate-800 mb-1">
+              <Clock className="w-[18px] h-[18px] text-slate-600" />
+              <h2 className="text-base font-bold text-slate-800">Follow-up & Notes</h2>
+            </div>
+            <p className="text-[13px] text-slate-500 ml-6">Follow-up scheduling and telemarketer observations</p>
+          </div>
+
+          <div className="ml-7 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2 lg:col-span-1">
+                <label className="text-sm font-semibold text-slate-700">Next Follow-up Date</label>
+                <input
+                  type="date"
+                  value={profile.nextFollowUpDate || ''}
+                  onChange={(e) => handleTextChange('nextFollowUpDate', e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              
+              <div className="space-y-2 lg:col-span-1">
+                <label className="text-sm font-semibold text-slate-700">Assigned to (HR staff)</label>
+                <select
+                  value={profile.assignedToHR || ''}
+                  onChange={(e) => handleTextChange('assignedToHR', e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select HR staff</option>
+                  <option value="HR 1">HR 1</option>
+                  <option value="HR 2">HR 2</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Telemarketer Notes</label>
+              <textarea
+                value={profile.telemarketerNotes || ''}
+                onChange={(e) => handleTextChange('telemarketerNotes', e.target.value)}
+                placeholder="Enter observations and notes from the call..."
+                rows={4}
+                className="w-full rounded-lg border border-slate-200 bg-slate-50 py-3 px-4 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
+              ></textarea>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">Upload Voice Recording (Legacy)</label>
+              <div className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 px-3 text-sm text-slate-700">
+                <input 
+                  type="file" 
+                  className="w-full text-sm text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 cursor-pointer" 
+                />
+              </div>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <div className="mb-6">
+                <label className="text-sm font-semibold text-slate-700 block">Live Voice Recording</label>
+                <p className="text-sm text-slate-500">Record voice directly using your microphone</p>
+              </div>
+              <button type="button" className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer w-max">
+                <Mic className="w-4 h-4" />
+                <span>Start Recording</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Declaration and Action buttons */}

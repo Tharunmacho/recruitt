@@ -8,7 +8,8 @@ import {
   ChevronLeft, 
   Menu, 
   Sparkles,
-  ShieldAlert
+  ShieldAlert,
+  Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -23,7 +24,6 @@ interface SidebarProps {
   setIsOpen: (open: boolean) => void;
   isCollapsed: boolean; // Desktop collapsed state
   setIsCollapsed: (collapsed: boolean) => void;
-  unreadNotificationsCount: number;
 }
 
 export default function Sidebar({
@@ -36,16 +36,13 @@ export default function Sidebar({
   isOpen,
   setIsOpen,
   isCollapsed,
-  setIsCollapsed,
-  unreadNotificationsCount
+  setIsCollapsed
 }: SidebarProps) {
   
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'form', label: 'Candidate Form', icon: FileSpreadsheet },
-    { id: 'preview', label: 'My Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell, badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'candidates', label: 'All Candidates', icon: Users },
   ];
 
   const handleNavClick = (pageId: string) => {
@@ -170,11 +167,6 @@ export default function Sidebar({
                   <span className="text-sm tracking-wide">{item.label}</span>
                 )}
               </div>
-              {item.badge !== undefined && (!isCollapsed || isOpen) && (
-                <span className="px-1.5 py-0.5 text-[10px] font-bold text-white bg-blue-600 rounded-full font-mono">
-                  {item.badge}
-                </span>
-              )}
             </button>
           );
         })}
