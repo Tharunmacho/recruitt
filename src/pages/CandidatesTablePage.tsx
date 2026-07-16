@@ -51,6 +51,39 @@ export default function CandidatesTablePage({
     }
   };
 
+  const handleExportCSV = () => {
+    if (filteredCandidates.length === 0) return;
+    
+    const headers = ['First Name', 'Last Name', 'DOB', 'Mobile Number', 'Job Preference', 'Country Looking For', 'Passport Available', 'Interest Level', 'SC Status', 'HR Assigned', 'Created At'];
+    const csvRows = [headers.join(',')];
+    
+    for (const c of filteredCandidates) {
+      const values = [
+        `"${c.firstName || ''}"`,
+        `"${c.lastName || ''}"`,
+        `"${c.dateOfBirth || ''}"`,
+        `"${c.mobileNumber || ''}"`,
+        `"${c.jobPreference || ''}"`,
+        `"${c.countryLookingFor || ''}"`,
+        `"${c.passportAvailable || ''}"`,
+        `"${c.interestLevel || ''}"`,
+        `"${c.serviceChargesStatus || ''}"`,
+        `"${c.assignedToHR || ''}"`,
+        `"${c.createdAt || ''}"`
+      ];
+      csvRows.push(values.join(','));
+    }
+    
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'candidates_export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       
@@ -79,7 +112,7 @@ export default function CandidatesTablePage({
           <button className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl shadow-sm transition-colors" title="Filter">
             <Filter className="w-4 h-4" />
           </button>
-          <button className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl shadow-sm transition-colors" title="Export CSV">
+          <button onClick={handleExportCSV} className="p-2.5 bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-xl shadow-sm transition-colors" title="Export CSV">
             <Download className="w-4 h-4" />
           </button>
         </div>
