@@ -1,0 +1,6 @@
+{
+  "name": "Internal Recruitment Candidate Portal",
+  "description": "A premium, dark-themed internal candidate portal for company recruitment, facilitating candidate profile completion, professional tracking, resume generation, and review processes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
