@@ -1669,7 +1669,7 @@ export default function CandidateFormPage({
             <p className="text-[13px] text-slate-500 ml-6">Career preferences and contact information</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ml-7">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 ">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Country Looking For <span className="text-red-500">*</span></label>
               <select
@@ -1793,7 +1793,7 @@ export default function CandidateFormPage({
             <p className="text-[13px] text-slate-500 ml-6">Candidate assessment and communication preferences</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 ml-7">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 ">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-slate-700">Source <span className="text-red-500">*</span></label>
               <select
@@ -1849,7 +1849,7 @@ export default function CandidateFormPage({
             </div>
           </div>
 
-          <div className="ml-7 space-y-2">
+          <div className=" space-y-2">
             <label className="text-sm font-semibold text-slate-700">Interest Level <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <button
@@ -1893,7 +1893,7 @@ export default function CandidateFormPage({
             <p className="text-[13px] text-slate-500 ml-6">Follow-up scheduling and telemarketer observations</p>
           </div>
 
-          <div className="ml-7 space-y-6">
+          <div className=" space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="space-y-2 lg:col-span-1">
                 <label className="text-sm font-semibold text-slate-700">Next Follow-up Date</label>
