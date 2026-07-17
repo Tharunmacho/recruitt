@@ -22,8 +22,8 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // Types and Mocks
 import { CandidateProfile, ApplicationStatus, UserState } from './types';
-import { INITIAL_MOCK_PROFILE, EMPTY_PROFILE, MOCK_CANDIDATES } from './mockData';
-
+import { INITIAL_MOCK_PROFILE, EMPTY_PROFILE } from './mockData';
+import { getCandidatesFromDb, deleteCandidateFromDb } from './services/db';
 // Pages and Core Components
 import Login from './pages/Login';
 import Sidebar from './components/Sidebar';
@@ -68,20 +68,27 @@ export default function App() {
         // Fallback
       }
     }
-    return INITIAL_MOCK_PROFILE; // Preload with Alex Mercer's beautiful sample dossier
+    return EMPTY_PROFILE; 
   });
 
-  const [candidates, setCandidates] = useState<CandidateProfile[]>(() => {
-    const saved = localStorage.getItem('nexhire_candidates');
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
-    }
-    return MOCK_CANDIDATES;
-  });
+  const [candidates, setCandidates] = useState<CandidateProfile[]>([]);
+  const [isLoadingCandidates, setIsLoadingCandidates] = useState(true);
 
+  // Fetch real candidates from Firebase on load
   useEffect(() => {
-    localStorage.setItem('nexhire_candidates', JSON.stringify(candidates));
-  }, [candidates]);
+    const fetchCandidates = async () => {
+      setIsLoadingCandidates(true);
+      try {
+        const data = await getCandidatesFromDb();
+        setCandidates(data);
+      } catch (error) {
+        console.error("Failed to load candidates:", error);
+      } finally {
+        setIsLoadingCandidates(false);
+      }
+    };
+    fetchCandidates();
+  }, [activePage]); // Refresh when navigating back to dashboard/table
 
   // Edit / View logic
   const handleEditCandidate = (candidate: CandidateProfile) => {
@@ -92,6 +99,21 @@ export default function App() {
   const handleViewCandidate = (candidate: CandidateProfile) => {
     setProfile(candidate);
     setActivePage('preview');
+  };
+
+  const handleDeleteCandidate = async (candidateId: string) => {
+    if (window.confirm("Are you sure you want to completely delete this candidate from the database?")) {
+      try {
+        await deleteCandidateFromDb(candidateId);
+        showToast('Candidate deleted successfully.');
+        // Refresh candidates
+        const data = await getCandidatesFromDb();
+        setCandidates(data);
+      } catch (error) {
+        console.error("Failed to delete candidate:", error);
+        showToast('Failed to delete candidate.');
+      }
+    }
   };
 
   // Notification State
@@ -345,10 +367,9 @@ export default function App() {
                   candidates={candidates}
                   onEdit={handleEditCandidate}
                   onView={handleViewCandidate}
+                  onDelete={handleDeleteCandidate}
                 />
               )}
-
-
 
             </main>
           </div>

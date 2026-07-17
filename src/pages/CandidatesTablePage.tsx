@@ -7,24 +7,30 @@ import {
   Plus,
   Edit2,
   Eye,
-  MessageCircle
+  MessageCircle,
+  History,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CandidateProfile } from '../types';
+import CandidateLogsModal from '../components/CandidateLogsModal';
 
 interface CandidatesTablePageProps {
   candidates: CandidateProfile[];
   onEdit: (candidate: CandidateProfile) => void;
   onView: (candidate: CandidateProfile) => void;
+  onDelete: (candidateId: string) => void;
 }
 
 export default function CandidatesTablePage({
   candidates,
   onEdit,
-  onView
+  onView,
+  onDelete
 }: CandidatesTablePageProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [selectedLogsCandidate, setSelectedLogsCandidate] = useState<{id: string, name: string} | null>(null);
 
   // Filter candidates
   const filteredCandidates = candidates.filter(c => {
@@ -124,7 +130,6 @@ export default function CandidatesTablePage({
           <table className="w-full text-sm text-left border-collapse">
             <thead className="bg-slate-900 text-slate-50 text-xs font-bold uppercase tracking-wider">
               <tr>
-                <th className="px-4 py-4 text-center">Created</th>
                 <th className="px-4 py-4 text-center">Name / DOB</th>
                 <th className="px-4 py-4 text-center">Contact</th>
                 <th className="px-4 py-4 text-center">Pass.</th>
@@ -143,14 +148,6 @@ export default function CandidatesTablePage({
                 
                 return (
                   <tr key={candidate.id || idx} className="group bg-white border-b border-slate-100 last:border-0 hover:bg-blue-50/50 transition-all duration-300 relative hover:z-10 hover:shadow-xl hover:shadow-blue-900/10">
-
-                    {/* Created */}
-                    <td className="px-4 py-4 text-center font-medium text-slate-600">
-                      <div className="flex flex-col items-center">
-                        <span>{candidate.createdAt?.split(' ')[0]} {candidate.createdAt?.split(' ')[1]}</span>
-                        <span>{candidate.createdAt?.split(' ')[2]}</span>
-                      </div>
-                    </td>
 
                     {/* Name / DOB */}
                     <td className="px-4 py-4 text-center">
@@ -214,9 +211,16 @@ export default function CandidatesTablePage({
                       </div>
                     </td>
 
-                    {/* Actions (Edit / View) */}
+                    {/* Actions (Edit / View / Logs) */}
                     <td className="px-4 py-4 text-center">
-                      <div className="flex items-center justify-center space-x-3">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button
+                          onClick={() => setSelectedLogsCandidate({ id: candidate.id!, name: `${candidate.firstName} ${candidate.lastName}` })}
+                          className="p-1.5 text-purple-500 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                          title="View Activity Logs"
+                        >
+                          <History className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => onView(candidate)}
                           className="p-1.5 text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
@@ -231,6 +235,13 @@ export default function CandidatesTablePage({
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
+                        <button
+                          onClick={() => onDelete(candidate.id!)}
+                          className="p-1.5 text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors ml-1"
+                          title="Delete Candidate"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -238,7 +249,7 @@ export default function CandidatesTablePage({
               })}
               {filteredCandidates.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="px-4 py-12 text-center text-slate-500">
+                  <td colSpan={10} className="px-4 py-12 text-center text-slate-500">
                     No candidates found.
                   </td>
                 </tr>
@@ -255,6 +266,14 @@ export default function CandidatesTablePage({
           onClick={() => setActiveMenu(null)}
         />
       )}
+
+      {/* Logs Modal */}
+      <CandidateLogsModal
+        isOpen={!!selectedLogsCandidate}
+        onClose={() => setSelectedLogsCandidate(null)}
+        candidateId={selectedLogsCandidate?.id || ''}
+        candidateName={selectedLogsCandidate?.name || ''}
+      />
     </div>
   );
 }

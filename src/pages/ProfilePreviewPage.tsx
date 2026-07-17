@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { saveCandidateToDb } from '../services/db';
 import { 
   User, 
   MapPin, 
@@ -88,14 +89,21 @@ export default function ProfilePreviewPage({
     }, 1500);
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      // Save real data to Firebase
+      await saveCandidateToDb(profile);
+      
       setIsSubmitting(false);
       setProfileStatus('Submitted');
       setApplicationStatus('Submitted');
       setShowSubmitModal(true);
-    }, 1000);
+    } catch (error: any) {
+      console.error("Failed to save candidate:", error);
+      setIsSubmitting(false);
+      alert(`Failed to submit profile to the database.\nError: ${error?.message || error}`);
+    }
   };
 
   const handleStatusShift = (nextStatus: ApplicationStatus) => {
@@ -735,23 +743,21 @@ export default function ProfilePreviewPage({
       </div>
 
       {/* Declarations and Actions bottom block */}
-      {profileStatus === 'Draft' && (
-        <div className="glass-panel p-6 rounded-2xl text-center space-y-4 print:hidden">
-          <h3 className="text-sm font-bold text-slate-800 font-display">Confirm Submission</h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-            Ready to forward your credentials? Submitting locks your profile and alerts the evaluation committee.
-          </p>
-          <div className="flex justify-center">
-            <button
-              onClick={handleFinalSubmit}
-              id="final-submit-btn"
-              className="px-8 py-3 rounded-xl text-white font-bold transition-all duration-300 gradient-btn text-xs cursor-pointer"
-            >
-              Confirm and Submit Profile
-            </button>
-          </div>
+      <div className="glass-panel p-6 rounded-2xl text-center space-y-4 print:hidden">
+        <h3 className="text-sm font-bold text-slate-800 font-display">Confirm Submission</h3>
+        <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+          Ready to forward your credentials? Submitting locks your profile and pushes it to the Firebase database.
+        </p>
+        <div className="flex justify-center">
+          <button
+            onClick={handleFinalSubmit}
+            id="final-submit-btn"
+            className="px-8 py-3 rounded-xl text-white font-bold transition-all duration-300 gradient-btn text-xs cursor-pointer"
+          >
+            Confirm and Submit Profile
+          </button>
         </div>
-      )}
+      </div>
 
       {/* Success Submission Modal Popup */}
       {showSubmitModal && (

@@ -161,3 +161,13 @@ export interface UserState {
   applicationStatus: ApplicationStatus;
   profileCompletionPercentage: number;
 }
+
+export interface SystemLog {
+  id?: string;
+  candidateId?: string;
+  action: string;
+  details: string;
+  timestamp: string;
+  userEmail: string;
+  category: 'CREATE' | 'UPDATE' | 'DELETE' | 'SYSTEM';
+}
