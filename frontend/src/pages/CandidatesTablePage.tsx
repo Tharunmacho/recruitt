@@ -9,7 +9,8 @@ import {
   Eye,
   MessageCircle,
   History,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CandidateProfile } from '../types';
@@ -95,13 +96,22 @@ export default function CandidatesTablePage({
       
       {/* Header and Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-            All Candidates
-          </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Manage, evaluate, and track candidate progress across the pipeline.
-          </p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => window.history.back()}
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
+              All Candidates
+            </h1>
+            <p className="text-slate-500 text-xs mt-1">
+              Manage, evaluate, and track candidate progress across the pipeline.
+            </p>
+          </div>
         </div>
         
         <div className="flex items-center space-x-3">

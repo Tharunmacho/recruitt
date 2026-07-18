@@ -35,6 +35,7 @@ import {
   DocumentUpload
 } from '../types';
 import FileUpload from '../components/FileUpload';
+import DocumentViewerModal from '../components/DocumentViewerModal';
 
 interface CandidateFormPageProps {
   profile: CandidateProfile;
@@ -62,7 +63,36 @@ export default function CandidateFormPage({
     additional: false
   });
 
-  const [notification, setNotification] = useState<string | null>(null);
+    const [notification, setNotification] = useState<string | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<DocumentUpload | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleDirectSubmit = async () => {
+    setIsSubmitting(true);
+    setNotification('Saving candidate data...');
+    try {
+      const { submitCandidateProfile } = await import('../services/db');
+      const docId = await submitCandidateProfile(profile);
+      
+      // Update local profile state with new ID
+      if (!profile.id) {
+        setProfile(prev => ({ ...prev, id: docId }));
+      }
+      
+      setNotification('Profile successfully saved to database!');
+      
+      // Automatically go to preview after saving successfully
+      setTimeout(() => {
+        onPreview();
+      }, 800);
+      
+    } catch (e: any) {
+      setNotification(`Error saving profile: ${e.message}`);
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setNotification(null), 3000);
+    }
+  };
 
   const toggleSection = (section: string) => {
     setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
@@ -302,7 +332,7 @@ export default function CandidateFormPage({
   };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-10 text-left space-y-10" id="candidate-form-container">
+    <div className="w-full max-w-[95%] xl:max-w-7xl mx-auto bg-white/60 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl shadow-blue-900/5 border border-white p-8 md:p-14 text-left space-y-8 relative overflow-hidden" id="candidate-form-container">
       
       {/* Toast Notification */}
       <AnimatePresence>
@@ -322,6 +352,16 @@ export default function CandidateFormPage({
       {/* Header and Controls */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
+          <button 
+            type="button"
+            onClick={() => window.history.back()} 
+            className="text-slate-500 hover:text-slate-900 flex items-center space-x-2 text-sm font-bold mb-6 transition-colors group"
+          >
+            <div className="bg-slate-200/50 p-1.5 rounded-full group-hover:bg-slate-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </div>
+            <span>Back</span>
+          </button>
           <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
             Complete Evaluation Dossier
           </h1>
@@ -332,11 +372,12 @@ export default function CandidateFormPage({
         
       </div>
 
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-10" id="dossier-full-form">
+      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50/50 to-transparent -z-10 pointer-events-none"></div>
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-4" id="dossier-full-form">
         
         {/* SECTION 1: Personal Information */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <User className="w-[18px] h-[18px] text-slate-600" />
@@ -348,35 +389,18 @@ export default function CandidateFormPage({
 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-5">
                   
-                  {/* Photo url placeholder */}
-                  <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-5 items-center pb-3 border-b border-slate-200">
-                    <div className="text-left">
-                      <label className="text-xs font-semibold text-slate-700 block tracking-wide uppercase">
-                        Profile Photo URL / Base64
-                      </label>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Loads instant face vector inside dossier.</p>
-                    </div>
-                    <div className="md:col-span-3 flex items-center space-x-4">
-                      {profile.profilePhoto ? (
-                        <img 
-                          src={profile.profilePhoto} 
-                          alt="Avatar draft" 
-                          className="w-14 h-14 rounded-xl object-cover border border-slate-200 bg-slate-50 shrink-0"
-                          referrerPolicy="no-referrer"
-                        />
-                      ) : (
-                        <div className="w-14 h-14 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shrink-0">
-                          <User className="w-6 h-6" />
-                        </div>
-                      )}
-                      <input
-                        type="text"
-                        value={profile.profilePhoto}
-                        onChange={(e) => handleTextChange('profilePhoto', e.target.value)}
-                        className="flex-1 glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-xs"
-                        placeholder="Paste image address URL or leave empty"
-                      />
-                    </div>
+                  {/* Profile Photo Upload */}
+                  <div className="md:col-span-3 pb-3 border-b border-slate-200">
+                    <FileUpload
+                      id="profilePhoto"
+                      label="Profile Photo"
+                      accept="image/*"
+                      currentFile={profile.profilePhoto as any}
+                      onUpload={(file) => handleDocUpload('profilePhoto', file)}
+                      onClear={() => handleDocClear('profilePhoto')}
+                        onView={() => setViewingDoc(profile.profilePhoto as any)}
+                    />
+                    <p className="text-[10px] text-slate-500 mt-2 ml-1">Upload a professional headshot for your dossier.</p>
                   </div>
 
                   {/* Name inputs */}
@@ -544,7 +568,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 2: Professional Information */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <Briefcase className="w-[18px] h-[18px] text-slate-600" />
@@ -711,7 +735,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 3: Education */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <GraduationCap className="w-[18px] h-[18px] text-slate-600" />
@@ -907,7 +931,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 4: Technical Skills */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <Cpu className="w-[18px] h-[18px] text-slate-600" />
@@ -1034,7 +1058,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 5: Projects */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <FolderGit className="w-[18px] h-[18px] text-slate-600" />
@@ -1178,7 +1202,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 6: Work Experience */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <Briefcase className="w-[18px] h-[18px] text-slate-600" />
@@ -1324,7 +1348,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 7: Certifications */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <Award className="w-[18px] h-[18px] text-slate-600" />
@@ -1422,7 +1446,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 8: Documents */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <UploadCloud className="w-[18px] h-[18px] text-slate-600" />
@@ -1449,6 +1473,7 @@ export default function CandidateFormPage({
                       currentFile={profile.resume}
                       onUpload={(file) => handleDocUpload('resume', file)}
                       onClear={() => handleDocClear('resume')}
+                        onView={() => setViewingDoc(profile.resume as any)}
                     />
 
                     <FileUpload
@@ -1458,6 +1483,7 @@ export default function CandidateFormPage({
                       currentFile={profile.passportPhoto}
                       onUpload={(file) => handleDocUpload('passportPhoto', file)}
                       onClear={() => handleDocClear('passportPhoto')}
+                        onView={() => setViewingDoc(profile.passportPhoto as any)}
                     />
 
                     <FileUpload
@@ -1467,6 +1493,7 @@ export default function CandidateFormPage({
                       currentFile={profile.aadhaarCard}
                       onUpload={(file) => handleDocUpload('aadhaarCard', file)}
                       onClear={() => handleDocClear('aadhaarCard')}
+                        onView={() => setViewingDoc(profile.aadhaarCard as any)}
                     />
 
                     <FileUpload
@@ -1476,6 +1503,7 @@ export default function CandidateFormPage({
                       currentFile={profile.panCard}
                       onUpload={(file) => handleDocUpload('panCard', file)}
                       onClear={() => handleDocClear('panCard')}
+                        onView={() => setViewingDoc(profile.panCard as any)}
                     />
 
                     <FileUpload
@@ -1485,6 +1513,7 @@ export default function CandidateFormPage({
                       currentFile={profile.degreeCertificate}
                       onUpload={(file) => handleDocUpload('degreeCertificate', file)}
                       onClear={() => handleDocClear('degreeCertificate')}
+                        onView={() => setViewingDoc(profile.degreeCertificate as any)}
                     />
 
                     <FileUpload
@@ -1494,6 +1523,7 @@ export default function CandidateFormPage({
                       currentFile={profile.experienceCertificate}
                       onUpload={(file) => handleDocUpload('experienceCertificate', file)}
                       onClear={() => handleDocClear('experienceCertificate')}
+                        onView={() => setViewingDoc(profile.experienceCertificate as any)}
                     />
 
                     <div className="md:col-span-2 lg:col-span-3 border-t border-slate-200 pt-5">
@@ -1504,6 +1534,7 @@ export default function CandidateFormPage({
                         currentFile={profile.offerLetter}
                         onUpload={(file) => handleDocUpload('offerLetter', file)}
                         onClear={() => handleDocClear('offerLetter')}
+                        onView={() => setViewingDoc(profile.offerLetter as any)}
                       />
                     </div>
                   </div>
@@ -1513,7 +1544,7 @@ export default function CandidateFormPage({
 
         {/* SECTION 9: Additional Information */}
         
-        <div className="pb-10 pt-4 border-b border-slate-200 last:border-0">
+        <div className="pb-8 pt-4">
           <div className="mb-6">
             <div className="flex items-center space-x-2 text-slate-800 mb-1">
               <FileText className="w-[18px] h-[18px] text-slate-600" />
@@ -1973,32 +2004,53 @@ export default function CandidateFormPage({
             </div>
           </label>
 
-          <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex space-x-3">
+          <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-end gap-4">
+            {profile.id && (
               <button
                 type="button"
-                id="save-draft-btn"
-                onClick={onSaveDraft}
-                className="px-5 py-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold flex items-center space-x-2 transition-all cursor-pointer"
+                id="preview-profile-btn"
+                onClick={onPreview}
+                className="px-6 py-3 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold transition-all duration-300 flex items-center space-x-2 cursor-pointer"
               >
-                <Save className="w-4 h-4 text-slate-500" />
-                <span>Save Draft</span>
+                <Eye className="w-4 h-4" />
+                <span>Review Update</span>
               </button>
-            </div>
-
-            <button
-              type="button"
-              id="preview-profile-btn"
-              onClick={onPreview}
-              className="px-6 py-3 rounded-xl text-white text-xs font-bold transition-all duration-300 gradient-btn flex items-center space-x-2 cursor-pointer"
-            >
-              <Eye className="w-4 h-4" />
-              <span>Preview Profile Dossier</span>
-            </button>
+            )}
+            
+            {profile.id ? (
+              <button
+                type="button"
+                onClick={handleDirectSubmit}
+                disabled={isSubmitting}
+                className={`px-8 py-3 rounded-xl text-white text-xs font-bold transition-all duration-300 flex items-center space-x-2 cursor-pointer shadow-sm ${isSubmitting ? 'bg-slate-400' : 'bg-emerald-600 hover:bg-emerald-700 hover:shadow'}`}
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>{isSubmitting ? 'Updating...' : 'Update'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleDirectSubmit}
+                disabled={isSubmitting}
+                className={`px-8 py-3 rounded-xl text-white text-xs font-bold transition-all duration-300 flex items-center space-x-2 cursor-pointer shadow-sm ${isSubmitting ? 'bg-slate-400' : 'gradient-btn hover:shadow'}`}
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
+              </button>
+            )}
           </div>
         </div>
 
       </form>
+    
+      {/* Document Viewer Modal */}
+      {viewingDoc && (
+        <DocumentViewerModal
+          url={viewingDoc.file ? URL.createObjectURL(viewingDoc.file) : ((viewingDoc as any).url || viewingDoc.base64 || '')}
+          filename={viewingDoc.name || 'Document'}
+          onClose={() => setViewingDoc(null)}
+        />
+      )}
     </div>
   );
 }

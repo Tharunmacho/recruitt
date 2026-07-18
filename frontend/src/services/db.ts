@@ -40,6 +40,117 @@ export const logSystemEvent = async (action: string, details: string, category: 
 };
 
 /**
+ * Uploads physical files to the local Express backend server.
+ * Returns the DocumentUpload objects but with their `url` set and `base64/file` stripped to save DB space.
+ */
+export const uploadCandidateFiles = async (
+  candidateName: string, 
+  docsToUpload: { field: string, doc: any }[]
+): Promise<any[]> => {
+  if (docsToUpload.length === 0) return [];
+  
+  const formData = new FormData();
+  
+  docsToUpload.forEach(item => {
+    formData.append(item.field, item.doc.file);
+  });
+  
+  const safeName = candidateName || 'Unknown_Candidate';
+  
+  try {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+    const response = await fetch(`${apiUrl}/api/upload/${encodeURIComponent(safeName)}`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    
+    return data.files.map((fileRes: any) => {
+      return {
+        field: fileRes.fieldname,
+        doc: {
+          name: fileRes.originalName,
+          size: `${(fileRes.size / 1024).toFixed(0)} KB`,
+          uploadedAt: new Date().toISOString().split('T')[0],
+          url: fileRes.url
+        }
+      };
+    });
+  } catch (error) {
+    console.error('Failed to upload files to backend:', error);
+    throw error;
+  }
+};
+
+/**
+ * Orchestrates the full process of extracting files from a profile, uploading them,
+ * sanitizing the profile object, and saving it to Firestore.
+ */
+export const submitCandidateProfile = async (profile: CandidateProfile): Promise<void> => {
+  const docsToUpload: { field: string, doc: any }[] = [];
+  const documentFields = [
+    'profilePhoto', 'resume', 'passportPhoto', 'aadhaarCard', 'panCard', 
+    'degreeCertificate', 'experienceCertificate', 'offerLetter', 'voiceRecordingLegacy'
+  ];
+  
+  documentFields.forEach(field => {
+    const docObj = (profile as any)[field];
+    if (docObj) {
+      let validFile = null;
+      if (docObj.file instanceof File || docObj.file instanceof Blob) {
+        validFile = docObj.file;
+      } else if (docObj.base64 && typeof docObj.base64 === 'string') {
+        try {
+          const mime = docObj.base64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,.*/)?.[1] || 'application/octet-stream';
+          const b64Data = docObj.base64.split(',')[1];
+          if (b64Data) {
+            const byteString = atob(b64Data);
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            validFile = new File([ab], docObj.name || 'document', { type: mime });
+          }
+        } catch (e) {
+          console.warn('Failed to reconstruct file from base64 for', field);
+        }
+      }
+      
+      if (validFile) {
+        docsToUpload.push({ field, doc: { ...docObj, file: validFile } });
+      }
+    }
+  });
+
+  const candidateName = `${profile.firstName}_${profile.lastName}_${profile.mobileNumber}`;
+  const uploadedDocs = await uploadCandidateFiles(candidateName, docsToUpload);
+  
+  const profileToSave = JSON.parse(JSON.stringify(profile));
+  
+  // Apply any freshly uploaded document properties to the profile
+  uploadedDocs.forEach(uploadedDoc => {
+    (profileToSave as any)[uploadedDoc.field] = uploadedDoc.doc;
+  });
+
+  // Strip complex objects before saving to DB
+  documentFields.forEach(field => {
+    const doc = (profileToSave as any)[field];
+    if (doc && typeof doc === 'object') {
+      delete doc.file;
+      delete doc.base64;
+    }
+  });
+
+  await saveCandidateToDb(profileToSave);
+};
+
+/**
  * Saves a new candidate profile to Firestore
  */
 export const saveCandidateToDb = async (profile: CandidateProfile): Promise<string> => {
@@ -76,16 +187,36 @@ export const saveCandidateToDb = async (profile: CandidateProfile): Promise<stri
           
           const oldVal = oldData[key];
           
-          // Only compare simple text/number/boolean fields to keep logs readable
+          // Compare simple text/number/boolean fields directly
           if (typeof newVal !== 'object' && typeof oldVal !== 'object') {
             // Treat empty strings and undefined as equal 'N/A'
             const safeOld = oldVal || 'N/A';
             const safeNew = newVal || 'N/A';
             
             if (safeOld !== safeNew) {
-              // Format camelCase key into readable text (e.g. "email" -> "Email", "mobileNumber" -> "Mobile Number")
               const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
               changes.push(`${formattedKey} changed to '${safeNew}'`);
+            }
+          } else {
+            // For arrays (lists)
+            if (Array.isArray(newVal) || Array.isArray(oldVal)) {
+              const oldArr = Array.isArray(oldVal) ? oldVal : [];
+              const newArr = Array.isArray(newVal) ? newVal : [];
+              if (JSON.stringify(oldArr) !== JSON.stringify(newArr)) {
+                const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                changes.push(`${formattedKey} list was updated (${newArr.length} items)`);
+              }
+            } 
+            // For Document Uploads (objects with name, size, url)
+            else if ((newVal && typeof newVal === 'object') || (oldVal && typeof oldVal === 'object')) {
+              const oldDoc = oldVal || {};
+              const newDoc = newVal || {};
+              
+              // We only care if the actual file identity changed (ignoring base64/file properties that may have been stripped)
+              if (oldDoc.name !== newDoc.name || oldDoc.url !== newDoc.url || oldDoc.size !== newDoc.size) {
+                const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                changes.push(`${formattedKey} document was updated`);
+              }
             }
           }
         }

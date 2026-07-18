@@ -23,10 +23,13 @@ import {
   AlertCircle,
   HelpCircle,
   Building,
-  Check
+  Check,
+  ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { CandidateProfile, ApplicationStatus } from '../types';
+import DocumentViewerModal from '../components/DocumentViewerModal';
 
 interface ProfilePreviewPageProps {
   profile: CandidateProfile;
@@ -35,7 +38,7 @@ interface ProfilePreviewPageProps {
   setProfileStatus: (status: 'Draft' | 'Submitted') => void;
   setApplicationStatus: (status: ApplicationStatus) => void;
   completionPercentage: number;
-  setActivePage: (page: string) => void;
+  onSuccessComplete?: () => void;
 }
 
 export default function ProfilePreviewPage({
@@ -45,11 +48,13 @@ export default function ProfilePreviewPage({
   setProfileStatus,
   setApplicationStatus,
   completionPercentage,
-  setActivePage
+  onSuccessComplete
 }: ProfilePreviewPageProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'about' | 'professional' | 'education' | 'skills' | 'experience' | 'documents'>('about');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewDocument, setViewDocument] = useState<{url: string, filename: string} | null>(null);
   const [downloading, setDownloading] = useState(false);
 
   // Status steps mapping
@@ -92,8 +97,8 @@ export default function ProfilePreviewPage({
   const handleFinalSubmit = async () => {
     setIsSubmitting(true);
     try {
-      // Save real data to Firebase
-      await saveCandidateToDb(profile);
+      const { submitCandidateProfile } = await import('../services/db');
+      await submitCandidateProfile(profile);
       
       setIsSubmitting(false);
       setProfileStatus('Submitted');
@@ -115,18 +120,27 @@ export default function ProfilePreviewPage({
       
       {/* Visual Header Banner - Hidden during print */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 print:hidden">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-            Digital Profile Preview
-          </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            This represents your formal evaluation dossier as seen by HR and technical interview panels.
-          </p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
+            title="Return to Dashboard"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
+              Digital Profile Preview
+            </h1>
+            <p className="text-slate-500 text-xs mt-1">
+              This represents your formal evaluation dossier as seen by HR and technical interview panels.
+            </p>
+          </div>
         </div>
         
         <div className="flex flex-wrap gap-2 shrink-0">
           <button
-            onClick={() => setActivePage('form')}
+            onClick={() => navigate('/form')}
             className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all cursor-pointer"
           >
             <Edit className="w-3.5 h-3.5" />
@@ -153,94 +167,22 @@ export default function ProfilePreviewPage({
           {profileStatus === 'Draft' ? (
             <button
               onClick={handleFinalSubmit}
-              className="gradient-btn px-5 py-2 rounded-xl text-white text-xs font-bold flex items-center space-x-1.5 cursor-pointer"
+              disabled={isSubmitting}
+              className={`px-5 py-2 rounded-xl text-white text-xs font-bold flex items-center space-x-1.5 cursor-pointer ${isSubmitting ? 'bg-slate-400' : 'gradient-btn'}`}
             >
               <CheckCircle className="w-3.5 h-3.5" />
-              <span>Submit Profile</span>
+              <span>{isSubmitting ? 'Processing...' : profile.id ? 'Update Profile' : 'Submit Profile'}</span>
             </button>
           ) : (
             <div className="px-5 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold flex items-center space-x-1.5">
               <Check className="w-3.5 h-3.5" />
-              <span>Submitted</span>
+              <span>{profile.id ? 'Updated' : 'Submitted'}</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Evaluation Status Tracker Pipeline - print hidden */}
-      <div className="glass-panel p-5 rounded-2xl print:hidden">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xs font-bold text-slate-500 tracking-wider uppercase font-mono">
-            HR Stage Management (Interactive Simulation)
-          </h3>
-          <span className="text-[10px] text-blue-600 font-semibold font-mono">Active Stage: {applicationStatus}</span>
-        </div>
 
-        {/* Dynamic status selection row to simulate recruitment decisions */}
-        <div className="flex flex-wrap gap-2 mb-5 p-2 bg-slate-100/60 rounded-xl border border-slate-200">
-          <span className="text-[10px] text-slate-500 font-mono self-center px-2">Simulate HR Action:</span>
-          {['Under Review', 'Shortlisted', 'Interview Scheduled', 'Selected', 'Rejected'].map((status) => (
-            <button
-              key={status}
-              onClick={() => handleStatusShift(status as ApplicationStatus)}
-              className={`px-2.5 py-1 text-[10px] font-semibold rounded-lg border transition-all cursor-pointer ${
-                applicationStatus === status
-                  ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
-                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-800'
-              }`}
-            >
-              Set {status}
-            </button>
-          ))}
-        </div>
-
-        {/* Timeline visualization */}
-        <div className="relative pt-2 pb-1">
-          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2" />
-          <div 
-            className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 -translate-y-1/2 transition-all duration-500" 
-            style={{ 
-              width: applicationStatus === 'Rejected' ? '100%' : 
-                     applicationStatus === 'Submitted' ? '10%' :
-                     applicationStatus === 'Under Review' ? '35%' :
-                     applicationStatus === 'Shortlisted' ? '60%' :
-                     applicationStatus === 'Interview Scheduled' ? '80%' : '100%'
-            }}
-          />
-
-          <div className="relative flex justify-between">
-            {statusSteps.map((step, idx) => {
-              const isActive = applicationStatus === step.key;
-              const isPassed = statusSteps.findIndex(s => s.key === applicationStatus) >= idx && applicationStatus !== 'Rejected';
-              return (
-                <div key={step.key} className="flex flex-col items-center">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border transition-all duration-300 z-10 ${
-                    isActive 
-                      ? 'bg-blue-600 border-blue-400 text-white glow-blue' 
-                      : isPassed 
-                      ? 'bg-indigo-50 border-indigo-200 text-indigo-700 font-semibold' 
-                      : 'bg-slate-100 border-slate-200 text-slate-400'
-                  }`}>
-                    {idx + 1}
-                  </div>
-                  <span className={`text-[10px] font-semibold font-mono mt-2 tracking-tight ${
-                    isActive ? 'text-blue-600' : isPassed ? 'text-indigo-600' : 'text-slate-400'
-                  }`}>
-                    {step.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {applicationStatus === 'Rejected' && (
-          <div className="mt-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center space-x-2.5">
-            <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />
-            <span>This dossier is currently marked as [Rejected]. Please coordinate with your HR contact.</span>
-          </div>
-        )}
-      </div>
 
       {/* Main Premium Digital Resume Card */}
       <div className="glass-panel rounded-3xl overflow-hidden shadow-sm relative border border-slate-250 bg-white print:border-none print:shadow-none print:bg-transparent">
@@ -255,7 +197,7 @@ export default function ProfilePreviewPage({
           <div className="flex justify-center md:justify-start">
             {profile.profilePhoto ? (
               <img 
-                src={profile.profilePhoto} 
+                src={typeof profile.profilePhoto === 'object' ? (profile.profilePhoto as any).url || (profile.profilePhoto as any).base64 : profile.profilePhoto} 
                 alt={`${profile.firstName} ${profile.lastName}`} 
                 className="w-28 h-28 md:w-32 md:h-32 rounded-2xl object-cover border-2 border-slate-200 shadow-sm shrink-0"
                 referrerPolicy="no-referrer"
@@ -725,7 +667,16 @@ export default function ProfilePreviewPage({
                     </div>
                     <div className="flex space-x-1 print:hidden">
                       <button
-                        onClick={() => alert(`Simulating file check: ${item.doc?.name}`)}
+                        onClick={() => {
+                          if (item.doc && (item.doc as any).url) {
+                            setViewDocument({
+                              url: (item.doc as any).url,
+                              filename: item.doc.name
+                            });
+                          } else {
+                            alert(`File has not been uploaded yet: ${item.doc?.name}`);
+                          }
+                        }}
                         className="p-1.5 hover:bg-slate-100 text-slate-500 hover:text-slate-800 border border-slate-200 bg-white rounded-lg transition-colors cursor-pointer"
                         title="View Asset"
                       >
@@ -742,23 +693,6 @@ export default function ProfilePreviewPage({
 
       </div>
 
-      {/* Declarations and Actions bottom block */}
-      <div className="glass-panel p-6 rounded-2xl text-center space-y-4 print:hidden">
-        <h3 className="text-sm font-bold text-slate-800 font-display">Confirm Submission</h3>
-        <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-          Ready to forward your credentials? Submitting locks your profile and pushes it to the Firebase database.
-        </p>
-        <div className="flex justify-center">
-          <button
-            onClick={handleFinalSubmit}
-            id="final-submit-btn"
-            className="px-8 py-3 rounded-xl text-white font-bold transition-all duration-300 gradient-btn text-xs cursor-pointer"
-          >
-            Confirm and Submit Profile
-          </button>
-        </div>
-      </div>
-
       {/* Success Submission Modal Popup */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
@@ -772,18 +706,24 @@ export default function ProfilePreviewPage({
             </div>
 
             <div className="space-y-1.5">
-              <h3 className="text-xl font-bold text-slate-900 font-display">Profile Submitted Successfully!</h3>
+              <h3 className="text-xl font-bold text-slate-900 font-display">
+                {profile.id ? 'Profile Updated Successfully!' : 'Profile Submitted Successfully!'}
+              </h3>
               <p className="text-xs text-emerald-600 font-mono uppercase tracking-wider">Evaluation File Active</p>
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-              Your profile has been submitted successfully to the HR Recruitment Team. Your onboarding coordinator has been notified and your evaluation timeline is now active.
+              {profile.id 
+                ? 'The candidate profile and all associated documents have been successfully updated in the system.' 
+                : 'Your profile has been submitted successfully to the HR Recruitment Team. Your onboarding coordinator has been notified and your evaluation timeline is now active.'}
             </p>
 
             <div className="p-3.5 bg-slate-50 rounded-xl text-left border border-slate-200 text-xs text-slate-500 space-y-1.5">
               <div className="flex justify-between">
                 <span>Application State:</span>
-                <span className="text-blue-600 font-bold uppercase font-mono">Submitted</span>
+                <span className="text-blue-600 font-bold uppercase font-mono">
+                  {profile.id ? 'Updated' : 'Submitted'}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Verification Stage:</span>
@@ -794,7 +734,8 @@ export default function ProfilePreviewPage({
             <button
               onClick={() => {
                 setShowSubmitModal(false);
-                setActivePage('dashboard');
+                if (onSuccessComplete) onSuccessComplete();
+                navigate('/dashboard');
               }}
               className="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all font-sans cursor-pointer"
             >
@@ -802,6 +743,15 @@ export default function ProfilePreviewPage({
             </button>
           </motion.div>
         </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {viewDocument && (
+        <DocumentViewerModal 
+          url={viewDocument.url}
+          filename={viewDocument.filename}
+          onClose={() => setViewDocument(null)}
+        />
       )}
     </div>
   );

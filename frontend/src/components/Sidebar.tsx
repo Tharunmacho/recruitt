@@ -12,10 +12,9 @@ import {
   Users
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
-  activePage: string;
-  setActivePage: (page: string) => void;
   onLogout: () => void;
   candidateName: string;
   avatar: string;
@@ -24,11 +23,11 @@ interface SidebarProps {
   setIsOpen: (open: boolean) => void;
   isCollapsed: boolean; // Desktop collapsed state
   setIsCollapsed: (collapsed: boolean) => void;
+  onAvatarClick?: () => void;
+  onNavClick?: (pageId: string) => void;
 }
 
 export default function Sidebar({
-  activePage,
-  setActivePage,
   onLogout,
   candidateName,
   avatar,
@@ -36,9 +35,14 @@ export default function Sidebar({
   isOpen,
   setIsOpen,
   isCollapsed,
-  setIsCollapsed
+  setIsCollapsed,
+  onAvatarClick,
+  onNavClick
 }: SidebarProps) {
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activePage = location.pathname.substring(1) || 'dashboard';
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'form', label: 'Candidate Form', icon: FileSpreadsheet },
@@ -46,7 +50,10 @@ export default function Sidebar({
   ];
 
   const handleNavClick = (pageId: string) => {
-    setActivePage(pageId);
+    if (onNavClick) {
+      onNavClick(pageId);
+    }
+    navigate(`/${pageId}`);
     setIsOpen(false); // Close mobile menu if open
   };
 
@@ -94,11 +101,15 @@ export default function Sidebar({
                 <img 
                   src={avatar} 
                   alt={candidateName} 
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-200"
+                  className="w-10 h-10 rounded-xl object-cover border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity"
                   referrerPolicy="no-referrer"
+                  onClick={onAvatarClick}
                 />
               ) : (
-                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+                <div 
+                  className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100 cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={onAvatarClick}
+                >
                   {candidateName ? candidateName.charAt(0) : 'C'}
                 </div>
               )}

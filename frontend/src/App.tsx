@@ -22,19 +22,23 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // Types and Mocks
 import { CandidateProfile, ApplicationStatus, UserState } from './types';
-import { INITIAL_MOCK_PROFILE, EMPTY_PROFILE } from './mockData';
+import { EMPTY_PROFILE } from './mockData';
 import { getCandidatesFromDb, deleteCandidateFromDb } from './services/db';
 // Pages and Core Components
 import Login from './pages/Login';
 import Sidebar from './components/Sidebar';
+import DocumentViewerModal from './components/DocumentViewerModal';
 import Dashboard from './pages/Dashboard';
 import CandidateFormPage from './pages/CandidateFormPage';
 import ProfilePreviewPage from './pages/ProfilePreviewPage';
 import CandidatesTablePage from './pages/CandidatesTablePage';
 
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   // Navigation & UI States
-  const [activePage, setActivePage] = useState<string>('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -71,6 +75,9 @@ export default function App() {
     return EMPTY_PROFILE; 
   });
 
+  const [savedProfile, setSavedProfile] = useState<CandidateProfile>(profile);
+  const [sidebarViewerDoc, setSidebarViewerDoc] = useState<{url: string, filename: string} | null>(null);
+
   const [candidates, setCandidates] = useState<CandidateProfile[]>([]);
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(true);
 
@@ -88,17 +95,19 @@ export default function App() {
       }
     };
     fetchCandidates();
-  }, [activePage]); // Refresh when navigating back to dashboard/table
+  }, [location.pathname]); // Refresh when navigating back to dashboard/table
 
   // Edit / View logic
   const handleEditCandidate = (candidate: CandidateProfile) => {
     setProfile(candidate);
-    setActivePage('form');
+    setSavedProfile(candidate);
+    navigate('/form');
   };
 
   const handleViewCandidate = (candidate: CandidateProfile) => {
     setProfile(candidate);
-    setActivePage('preview');
+    setSavedProfile(candidate);
+    navigate('/preview');
   };
 
   const handleDeleteCandidate = async (candidateId: string) => {
@@ -181,10 +190,7 @@ export default function App() {
 
   const currentCompletionPercentage = calculateCompletion(profile);
 
-  // Sync state to local storage on any changes
-  useEffect(() => {
-    localStorage.setItem('nexhire_candidate_profile', JSON.stringify(profile));
-  }, [profile]);
+  // Removed auto-sync to local storage to ensure explicit save behavior
 
   useEffect(() => {
     localStorage.setItem('nexhire_user', JSON.stringify(user));
@@ -204,29 +210,40 @@ export default function App() {
       profileCompletionPercentage: currentCompletionPercentage
     });
     showToast('Secure credentials accepted. Welcome back.');
-    setActivePage('dashboard');
+    navigate('/dashboard');
   };
 
   const handleLogout = () => {
     setUser(prev => ({ ...prev, isLoggedIn: false }));
     showToast('Secure session terminated.');
-    setActivePage('dashboard');
+    navigate('/');
   };
 
   const handleSaveDraft = () => {
-    localStorage.setItem('nexhire_candidate_profile', JSON.stringify(profile));
-    showToast('Draft backing synchronized successfully.');
+    try {
+      localStorage.setItem('nexhire_candidate_profile', JSON.stringify(profile));
+      setSavedProfile(profile);
+      showToast('Draft backing synchronized successfully.');
+    } catch (e) {
+      showToast('Failed to save draft. Storage quota exceeded.');
+    }
   };
 
   const handlePreviewNavigation = () => {
-    localStorage.setItem('nexhire_candidate_profile', JSON.stringify(profile));
-    setActivePage('preview');
+    try {
+      localStorage.setItem('nexhire_candidate_profile', JSON.stringify(profile));
+    } catch (e) {
+      console.warn('LocalStorage quota exceeded on preview navigation.', e);
+    }
+    setSavedProfile(profile);
+    navigate('/preview');
     showToast('Preview Dossier compiled.');
   };
 
   const handleClearForm = () => {
     if (window.confirm('Are you sure you want to clear all fields? This will delete all current draft entries.')) {
       setProfile(EMPTY_PROFILE);
+      setSavedProfile(EMPTY_PROFILE);
       setUser(prev => ({
         ...prev,
         profileStatus: 'Draft'
@@ -235,27 +252,12 @@ export default function App() {
     }
   };
 
-  const handleLoadSample = () => {
-    setProfile(INITIAL_MOCK_PROFILE);
-    setUser(prev => ({
-      ...prev,
-      profileStatus: 'Draft'
-    }));
-    showToast('Loaded mock dossier data for Senior Engineer Alex Mercer.');
-  };
-
   const setProfileStatus = (status: 'Draft' | 'Submitted') => {
     setUser(prev => ({ ...prev, profileStatus: status }));
   };
 
   const setApplicationStatus = (status: ApplicationStatus) => {
     setUser(prev => ({ ...prev, applicationStatus: status }));
-  };
-
-  // Mark all notifications as read
-  const handleMarkAllNotificationsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    showToast('All notifications cleared.');
   };
 
   return (
@@ -283,16 +285,34 @@ export default function App() {
           
           {/* Collapsible Sidebar */}
           <Sidebar
-            activePage={activePage}
-            setActivePage={setActivePage}
             onLogout={handleLogout}
             candidateName={profile.firstName ? `${profile.firstName} ${profile.lastName}` : 'Candidate User'}
-            avatar={profile.profilePhoto}
+            avatar={profile.profilePhoto && typeof profile.profilePhoto === 'object' ? profile.profilePhoto.url || profile.profilePhoto.base64 || '' : profile.profilePhoto as string || ''}
             completionPercentage={currentCompletionPercentage}
             isOpen={isMobileSidebarOpen}
             setIsOpen={setIsMobileSidebarOpen}
             isCollapsed={isSidebarCollapsed}
             setIsCollapsed={setIsSidebarCollapsed}
+            onAvatarClick={() => {
+              if (profile.profilePhoto && typeof profile.profilePhoto === 'object' && (profile.profilePhoto.url || profile.profilePhoto.base64)) {
+                setSidebarViewerDoc({
+                  url: profile.profilePhoto.url || profile.profilePhoto.base64 || '',
+                  filename: profile.profilePhoto.name || 'Profile Photo'
+                });
+              } else if (typeof profile.profilePhoto === 'string' && profile.profilePhoto) {
+                setSidebarViewerDoc({
+                  url: profile.profilePhoto,
+                  filename: 'Profile Photo'
+                });
+              }
+            }}
+            onNavClick={(pageId) => {
+              if (pageId === 'form') {
+                setProfile(EMPTY_PROFILE);
+                setSavedProfile(EMPTY_PROFILE);
+                localStorage.removeItem('nexhire_candidate_profile');
+              }
+            }}
           />
 
           {/* Main Workspace Frame */}
@@ -313,7 +333,7 @@ export default function App() {
                     HR INTERNAL SYSTEM
                   </span>
                   <h2 className="text-xs font-semibold text-slate-500 capitalize">
-                    Workspace / {activePage.replace('-', ' ')}
+                    Workspace / {location.pathname === '/' ? 'login' : location.pathname.substring(1).replace('-', ' ')}
                   </h2>
                 </div>
               </div>
@@ -334,45 +354,57 @@ export default function App() {
             <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6 print:p-0">
               
               {/* Conditional Routing Pages */}
-              {activePage === 'dashboard' && (
-                <Dashboard
-                  candidates={candidates}
-                  setActivePage={setActivePage}
-                />
-              )}
-
-              {activePage === 'form' && (
-                <CandidateFormPage
-                  profile={profile}
-                  setProfile={setProfile}
-                  onSaveDraft={handleSaveDraft}
-                  onPreview={handlePreviewNavigation}
-                />
-              )}
-
-              {activePage === 'preview' && (
-                <ProfilePreviewPage
-                  profile={profile}
-                  profileStatus={user.profileStatus}
-                  applicationStatus={user.applicationStatus}
-                  setProfileStatus={setProfileStatus}
-                  setApplicationStatus={setApplicationStatus}
-                  completionPercentage={currentCompletionPercentage}
-                  setActivePage={setActivePage}
-                />
-              )}
-
-              {activePage === 'candidates' && (
-                <CandidatesTablePage
-                  candidates={candidates}
-                  onEdit={handleEditCandidate}
-                  onView={handleViewCandidate}
-                  onDelete={handleDeleteCandidate}
-                />
-              )}
+              <Routes>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={
+                  <Dashboard
+                    candidates={candidates}
+                  />
+                } />
+                <Route path="/form" element={
+                  <CandidateFormPage
+                    profile={profile}
+                    setProfile={setProfile}
+                    onSaveDraft={handleSaveDraft}
+                    onPreview={handlePreviewNavigation}
+                  />
+                } />
+                <Route path="/preview" element={
+                  <ProfilePreviewPage
+                    profile={profile}
+                    profileStatus={user.profileStatus}
+                    applicationStatus={user.applicationStatus}
+                    setProfileStatus={setProfileStatus}
+                    setApplicationStatus={setApplicationStatus}
+                    completionPercentage={currentCompletionPercentage}
+                    onSuccessComplete={() => {
+                      setProfile(EMPTY_PROFILE);
+                      setSavedProfile(EMPTY_PROFILE);
+                      localStorage.removeItem('nexhire_candidate_profile');
+                    }}
+                  />
+                } />
+                <Route path="/candidates" element={
+                  <CandidatesTablePage
+                    candidates={candidates}
+                    onEdit={handleEditCandidate}
+                    onView={handleViewCandidate}
+                    onDelete={handleDeleteCandidate}
+                  />
+                } />
+              </Routes>
 
             </main>
           </div>
+
+          {sidebarViewerDoc && (
+            <DocumentViewerModal
+              url={sidebarViewerDoc.url}
+              filename={sidebarViewerDoc.filename}
+              onClose={() => setSidebarViewerDoc(null)}
+            />
+          )}
+
         </div>
       )}
     </div>

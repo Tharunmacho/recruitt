@@ -6,15 +6,19 @@
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "server": "node server.js"
   },
   "engines": {
     "node": "18"
   },
   "main": "index.js",
   "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "firebase-admin": "^11.8.0",
-    "firebase-functions": "^4.3.1"
+    "firebase-functions": "^4.3.1",
+    "multer": "^2.2.0"
   },
   "private": true
 }

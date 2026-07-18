@@ -12,16 +12,16 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { CandidateProfile } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardProps {
   candidates: CandidateProfile[];
-  setActivePage: (page: string) => void;
 }
 
 export default function Dashboard({
-  candidates,
-  setActivePage
+  candidates
 }: DashboardProps) {
+  const navigate = useNavigate();
 
   // Dynamic Metrics Calculation
   const totalCandidates = candidates.length;
@@ -38,14 +38,14 @@ export default function Dashboard({
       desc: 'Access the complete CRM database and search records.',
       icon: Users,
       color: 'blue',
-      action: () => setActivePage('candidates')
+      action: () => navigate('/candidates')
     },
     {
       title: 'Add New Record',
       desc: 'Initialize a fresh candidate profile entry manually.',
       icon: UserPlus,
       color: 'emerald',
-      action: () => setActivePage('form')
+      action: () => navigate('/form')
     },
     {
       title: 'Export Reports',

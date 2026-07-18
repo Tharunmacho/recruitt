@@ -45,12 +45,13 @@ export interface DocumentUpload {
   size: string;
   uploadedAt: string;
   base64?: string;
+  file?: File;
 }
 
 export interface CandidateProfile {
   id?: string;
   // Personal Info
-  profilePhoto: string; // Base64 or URL
+  profilePhoto: DocumentUpload | string | null;
   firstName: string;
   lastName: string;
   gender: string;
