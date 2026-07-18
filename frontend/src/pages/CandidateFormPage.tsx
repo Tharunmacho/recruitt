@@ -181,22 +181,22 @@ export default function CandidateFormPage({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Highest Qualification</label>
-                <select
+                <input
+                  type="text"
+                  list="qualifications-list"
                   value={profile.highestQualification}
                   onChange={(e) => handleTextChange('highestQualification', e.target.value)}
-                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white cursor-pointer"
-                >
-                  <option value="">Select Qualification...</option>
-                  {profile.highestQualification && !["High School", "Diploma", "Bachelor's Degree", "Master's Degree", "PhD", "Other"].includes(profile.highestQualification) && (
-                    <option value={profile.highestQualification}>{profile.highestQualification} (Legacy)</option>
-                  )}
-                  <option value="High School">High School</option>
-                  <option value="Diploma">Diploma</option>
-                  <option value="Bachelor's Degree">Bachelor's Degree</option>
-                  <option value="Master's Degree">Master's Degree</option>
-                  <option value="PhD">PhD</option>
-                  <option value="Other">Other</option>
-                </select>
+                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white"
+                  placeholder="Select or type..."
+                />
+                <datalist id="qualifications-list">
+                  <option value="High School" />
+                  <option value="Diploma" />
+                  <option value="Bachelor's Degree" />
+                  <option value="Master's Degree" />
+                  <option value="PhD" />
+                  <option value="Other" />
+                </datalist>
               </div>
 
               <div className="space-y-1.5">
@@ -269,90 +269,90 @@ export default function CandidateFormPage({
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Industry</label>
-                <select
+                <input
+                  type="text"
+                  list="industry-list"
                   value={profile.industry}
                   onChange={(e) => handleTextChange('industry', e.target.value)}
-                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white cursor-pointer"
-                >
-                  <option value="">Select Industry...</option>
-                  {profile.industry && !["IT / Software", "Healthcare / Medical", "Finance / Banking", "Construction / Real Estate", "Engineering / Manufacturing", "Retail / E-Commerce", "Education", "Other"].includes(profile.industry) && (
-                    <option value={profile.industry}>{profile.industry} (Legacy)</option>
-                  )}
-                  <option value="IT / Software">IT / Software</option>
-                  <option value="Healthcare / Medical">Healthcare / Medical</option>
-                  <option value="Finance / Banking">Finance / Banking</option>
-                  <option value="Construction / Real Estate">Construction / Real Estate</option>
-                  <option value="Engineering / Manufacturing">Engineering / Manufacturing</option>
-                  <option value="Retail / E-Commerce">Retail / E-Commerce</option>
-                  <option value="Education">Education</option>
-                  <option value="Other">Other</option>
-                </select>
+                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white"
+                  placeholder="Select or type..."
+                />
+                <datalist id="industry-list">
+                  <option value="IT / Software" />
+                  <option value="Healthcare / Medical" />
+                  <option value="Finance / Banking" />
+                  <option value="Construction / Real Estate" />
+                  <option value="Engineering / Manufacturing" />
+                  <option value="Retail / E-Commerce" />
+                  <option value="Education" />
+                  <option value="Other" />
+                </datalist>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Total Experience</label>
-                <select
+                <input
+                  type="text"
+                  list="total-exp-list"
                   value={profile.totalExperience}
                   onChange={(e) => handleTextChange('totalExperience', e.target.value)}
-                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white cursor-pointer"
-                >
-                  <option value="">Select Experience...</option>
-                  {profile.totalExperience && !["0 Years (Fresher)", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"].includes(profile.totalExperience) && (
-                    <option value={profile.totalExperience}>{profile.totalExperience} (Legacy)</option>
-                  )}
-                  <option value="0 Years (Fresher)">0 Years (Fresher)</option>
-                  <option value="1 Year">1 Year</option>
-                  <option value="2 Years">2 Years</option>
-                  <option value="3 Years">3 Years</option>
-                  <option value="4 Years">4 Years</option>
-                  <option value="5 Years">5 Years</option>
-                  <option value="6-10 Years">6-10 Years</option>
-                  <option value="10+ Years">10+ Years</option>
-                </select>
+                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white"
+                  placeholder="Select or type..."
+                />
+                <datalist id="total-exp-list">
+                  <option value="0 Years (Fresher)" />
+                  <option value="1 Year" />
+                  <option value="2 Years" />
+                  <option value="3 Years" />
+                  <option value="4 Years" />
+                  <option value="5 Years" />
+                  <option value="6-10 Years" />
+                  <option value="10+ Years" />
+                </datalist>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Indian Experience</label>
-                <select
+                <input
+                  type="text"
+                  list="indian-exp-list"
                   value={profile.indianExperience}
                   onChange={(e) => handleTextChange('indianExperience', e.target.value)}
-                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white cursor-pointer"
-                >
-                  <option value="">Select Experience...</option>
-                  {profile.indianExperience && !["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"].includes(profile.indianExperience) && (
-                    <option value={profile.indianExperience}>{profile.indianExperience} (Legacy)</option>
-                  )}
-                  <option value="0 Years">0 Years</option>
-                  <option value="1 Year">1 Year</option>
-                  <option value="2 Years">2 Years</option>
-                  <option value="3 Years">3 Years</option>
-                  <option value="4 Years">4 Years</option>
-                  <option value="5 Years">5 Years</option>
-                  <option value="6-10 Years">6-10 Years</option>
-                  <option value="10+ Years">10+ Years</option>
-                </select>
+                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white"
+                  placeholder="Select or type..."
+                />
+                <datalist id="indian-exp-list">
+                  <option value="0 Years" />
+                  <option value="1 Year" />
+                  <option value="2 Years" />
+                  <option value="3 Years" />
+                  <option value="4 Years" />
+                  <option value="5 Years" />
+                  <option value="6-10 Years" />
+                  <option value="10+ Years" />
+                </datalist>
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider">Overseas Experience</label>
-                <select
+                <input
+                  type="text"
+                  list="overseas-exp-list"
                   value={profile.overseasExperience}
                   onChange={(e) => handleTextChange('overseasExperience', e.target.value)}
-                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white cursor-pointer"
-                >
-                  <option value="">Select Experience...</option>
-                  {profile.overseasExperience && !["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"].includes(profile.overseasExperience) && (
-                    <option value={profile.overseasExperience}>{profile.overseasExperience} (Legacy)</option>
-                  )}
-                  <option value="0 Years">0 Years</option>
-                  <option value="1 Year">1 Year</option>
-                  <option value="2 Years">2 Years</option>
-                  <option value="3 Years">3 Years</option>
-                  <option value="4 Years">4 Years</option>
-                  <option value="5 Years">5 Years</option>
-                  <option value="6-10 Years">6-10 Years</option>
-                  <option value="10+ Years">10+ Years</option>
-                </select>
+                  className="w-full glass-input rounded-xl py-2.5 px-3.5 text-slate-800 text-sm bg-white"
+                  placeholder="Select or type..."
+                />
+                <datalist id="overseas-exp-list">
+                  <option value="0 Years" />
+                  <option value="1 Year" />
+                  <option value="2 Years" />
+                  <option value="3 Years" />
+                  <option value="4 Years" />
+                  <option value="5 Years" />
+                  <option value="6-10 Years" />
+                  <option value="10+ Years" />
+                </datalist>
               </div>
 
               <div className="space-y-1.5 md:col-span-3">
