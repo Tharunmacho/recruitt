@@ -144,46 +144,39 @@ export default function App() {
     analyticsOptIn: true
   });
 
-  // Calculate overall profile completion percentage
   const calculateCompletion = (prof: CandidateProfile): number => {
     let score = 0;
     let max = 0;
 
-    // Weight 1: Personal Info (10 keys)
+    // Weight 1: Personal Info (35%)
     const personalKeys: (keyof CandidateProfile)[] = [
-      'firstName', 'lastName', 'gender', 'dateOfBirth', 'nationality', 
-      'email', 'mobileNumber', 'address', 'city', 'country'
+      'candidateName', 'dateOfBirth', 'highestQualification', 
+      'contactNumber', 'whatsappNumber', 'email', 'address'
     ];
     personalKeys.forEach(k => {
-      max += 2.5;
-      if (prof[k]) score += 2.5;
+      max += 5;
+      if (prof[k]) score += 5;
     });
 
-    // Weight 2: Professional Info (5 keys)
+    // Weight 2: Professional Info (30%)
     const profKeys: (keyof CandidateProfile)[] = [
-      'currentDesignation', 'currentCompany', 'totalExperience', 'expectedCTC', 'professionalSummary'
+      'designation', 'industry', 'totalExperience', 
+      'indianExperience', 'overseasExperience', 'keySkills'
     ];
     profKeys.forEach(k => {
       max += 5;
       if (prof[k]) score += 5;
     });
 
-    // Weight 3: Static Education
-    max += 5; if (prof.school10th) score += 5;
-    max += 5; if (prof.school12th) score += 5;
-    max += 5; if (prof.educationList && prof.educationList.length > 0) score += 5;
+    // Weight 3: Passport Details (10%)
+    max += 5; if (prof.passportNumber) score += 5;
+    max += 5; if (prof.passportExpiryDate) score += 5;
 
-    // Weight 4: Technical Skills
-    max += 10; if (prof.programmingLanguages) score += 10;
-    max += 5; if (prof.frameworks) score += 5;
-
-    // Weight 5: Documents
+    // Weight 4: Documents (25%)
     max += 10; if (prof.resume) score += 10;
-    max += 5; if (prof.passportPhoto) score += 5;
-    max += 5; if (prof.aadhaarCard) score += 5;
-
-    // Weight 6: Additional Info
-    max += 5; if (prof.linkedin || prof.github) score += 5;
+    max += 5; if (prof.passport) score += 5;
+    max += 5; if (prof.educationCertificate) score += 5;
+    max += 5; if (prof.expertiseCertificates) score += 5;
 
     return Math.min(100, Math.round((score / max) * 100));
   };
@@ -286,13 +279,13 @@ export default function App() {
           {/* Collapsible Sidebar */}
           <Sidebar
             onLogout={handleLogout}
-            candidateName={profile.firstName ? `${profile.firstName} ${profile.lastName}` : 'Candidate User'}
+            candidateName={profile.candidateName || 'Candidate User'}
             avatar={(() => {
               let url = profile.profilePhoto && typeof profile.profilePhoto === 'object' 
                 ? profile.profilePhoto.url || profile.profilePhoto.base64 || '' 
                 : profile.profilePhoto as string || '';
               if (url.startsWith('/api/')) {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4005';
                 return `${API_URL}${url}`;
               }
               return url;
@@ -303,17 +296,7 @@ export default function App() {
             isCollapsed={isSidebarCollapsed}
             setIsCollapsed={setIsSidebarCollapsed}
             onAvatarClick={() => {
-              if (profile.profilePhoto && typeof profile.profilePhoto === 'object' && (profile.profilePhoto.url || profile.profilePhoto.base64)) {
-                setSidebarViewerDoc({
-                  url: profile.profilePhoto.url || profile.profilePhoto.base64 || '',
-                  filename: profile.profilePhoto.name || 'Profile Photo'
-                });
-              } else if (typeof profile.profilePhoto === 'string' && profile.profilePhoto) {
-                setSidebarViewerDoc({
-                  url: profile.profilePhoto,
-                  filename: 'Profile Photo'
-                });
-              }
+              // The user doesn't have a profile photo field anymore, so we can ignore this or add a dummy handler
             }}
             onNavClick={(pageId) => {
               if (pageId === 'form') {

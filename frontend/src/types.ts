@@ -50,104 +50,31 @@ export interface DocumentUpload {
 
 export interface CandidateProfile {
   id?: string;
-  // Personal Info
-  profilePhoto: DocumentUpload | string | null;
-  firstName: string;
-  lastName: string;
-  gender: string;
+  candidateName: string;
+  entryDate: string;
   dateOfBirth: string;
-  nationality: string;
+  highestQualification: string;
+  designation: string;
+  industry: string;
+  indianExperience: string;
+  overseasExperience: string;
+  totalExperience: string;
+  passportNumber: string;
+  passportExpiryDate: string;
+  contactNumber: string;
   email: string;
-  mobileNumber: string;
-  alternateNumber: string;
+  whatsappNumber: string;
   address: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
+  keySkills: string;
+
+  // Documents
+  passport: DocumentUpload | null;
+  resume: DocumentUpload | null;
+  educationCertificate: DocumentUpload | null;
+  expertiseCertificates: DocumentUpload | null;
 
   // Timestamps
   createdAt?: string;
-  
-  // Professional Info
-  currentDesignation: string;
-  currentCompany: string;
-  totalExperience: string; // e.g., "5 Years"
-  relevantExperience: string;
-  currentCTC: string;
-  expectedCTC: string;
-  noticePeriod: string;
-  immediateJoiner: boolean;
-  preferredLocation: string;
-  willingToRelocate: boolean;
-  workPreference: string; // "Remote" | "Hybrid" | "Onsite"
-  professionalSummary: string;
-
-  // Education (Core static + list)
-  school10th: string;
-  percentage10th: string;
-  school12th: string;
-  percentage12th: string;
-  diploma: string;
-  educationList: EducationEntry[];
-
-  // Technical Skills (Inputs)
-  programmingLanguages: string;
-  frameworks: string;
-  libraries: string;
-  databases: string;
-  cloudPlatforms: string;
-  operatingSystems: string;
-  tools: string;
-  versionControl: string;
-  softSkills: string;
-  languagesKnown: string;
-
-  // Multiple items
-  projects: ProjectEntry[];
-  workExperience: WorkExperienceEntry[];
-  certifications: CertificationEntry[];
-
-  // Documents
-  resume: DocumentUpload | null;
-  passportPhoto: DocumentUpload | null;
-  aadhaarCard: DocumentUpload | null;
-  panCard: DocumentUpload | null;
-  degreeCertificate: DocumentUpload | null;
-  experienceCertificate: DocumentUpload | null;
-  offerLetter: DocumentUpload | null;
-
-  // Additional Information
-  linkedin: string;
-  github: string;
-  portfolioWebsite: string;
-  hackerRank: string;
-  leetCode: string;
-  codeChef: string;
-  careerObjective: string;
-  strengths: string;
-  weaknesses: string;
-  achievements: string;
-  hobbies: string;
-
-  // Added Features
-  primaryNumber?: string;
-  countryLookingFor?: string;
-  jobPreference?: string;
-  skill?: string;
-  passportAvailable?: string;
-  whatsappNumber?: string;
-  whatsappSameAsPrimary?: boolean;
-  familyMemberNumber?: string;
-  source?: string;
-  jobDurationPreference?: string;
-  serviceChargesStatus?: string;
-  bestTimeToContact?: string;
-  interestLevel?: string;
-  nextFollowUpDate?: string;
-  assignedToHR?: string;
-  telemarketerNotes?: string;
-  voiceRecordingLegacy?: DocumentUpload | null;
 
   // Declarations
   declaredTrue: boolean;

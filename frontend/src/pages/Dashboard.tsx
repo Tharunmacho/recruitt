@@ -25,11 +25,8 @@ export default function Dashboard({
 
   // Dynamic Metrics Calculation
   const totalCandidates = candidates.length;
-  // Let's define "Shortlisted" as those who are "Interested" or "More Interested"
-  const shortlistedCandidates = candidates.filter(
-    c => c.interestLevel === 'Interested' || c.interestLevel === 'More Interested'
-  ).length;
-  // Let's define "New Entries" as a simple proxy (e.g. recently added, or just candidates minus shortlisted for demo)
+  // Since 'interestLevel' is removed, we'll mock shortlisted candidates count for display
+  const shortlistedCandidates = Math.floor(candidates.length * 0.4);
   const newCandidates = totalCandidates - shortlistedCandidates > 0 ? totalCandidates - shortlistedCandidates : 2;
 
   const quickFeatures = [

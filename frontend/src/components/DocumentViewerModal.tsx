@@ -10,7 +10,7 @@ interface DocumentViewerModalProps {
 
 export default function DocumentViewerModal({ url, filename, onClose }: DocumentViewerModalProps) {
   // Ensure relative API URLs are properly pointed to the backend
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4005';
   const displayUrl = url.startsWith('/api/') ? `${API_URL}${url}` : url;
   
   // Determine if it's likely an image to render natively, otherwise use iframe for PDF/docs

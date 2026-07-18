@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDILPxexEifVI-UVv1q1KsgTnSPqKZLy9s",
@@ -15,4 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore (Database) - Strictly connecting to the 'portal' database!
-export const db = getFirestore(app, "portal");
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true
+}, "portal");

@@ -58,7 +58,7 @@ export const uploadCandidateFiles = async (
   const safeName = candidateName || 'Unknown_Candidate';
   
   try {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4005';
     const response = await fetch(`${apiUrl}/api/upload/${encodeURIComponent(safeName)}`, {
       method: 'POST',
       body: formData
@@ -94,8 +94,7 @@ export const uploadCandidateFiles = async (
 export const submitCandidateProfile = async (profile: CandidateProfile): Promise<void> => {
   const docsToUpload: { field: string, doc: any }[] = [];
   const documentFields = [
-    'profilePhoto', 'resume', 'passportPhoto', 'aadhaarCard', 'panCard', 
-    'degreeCertificate', 'experienceCertificate', 'offerLetter', 'voiceRecordingLegacy'
+    'passport', 'resume', 'educationCertificate', 'expertiseCertificates'
   ];
   
   documentFields.forEach(field => {
@@ -128,8 +127,8 @@ export const submitCandidateProfile = async (profile: CandidateProfile): Promise
     }
   });
 
-  const candidateName = `${profile.firstName}_${profile.lastName}_${profile.mobileNumber}`;
-  const uploadedDocs = await uploadCandidateFiles(candidateName, docsToUpload);
+  const folderName = `${profile.candidateName}_${profile.contactNumber}`;
+  const uploadedDocs = await uploadCandidateFiles(folderName, docsToUpload);
   
   const profileToSave = JSON.parse(JSON.stringify(profile));
   
@@ -160,14 +159,12 @@ export const saveCandidateToDb = async (profile: CandidateProfile): Promise<stri
 
     // Create a detailed system log entry with the actual data
     const detailedData = [
-      `Name: ${profile.firstName} ${profile.lastName}`,
-      `Contact: ${profile.mobileNumber}`,
-      `Job Preferred: ${profile.jobPreference || 'N/A'}`,
-      `Country: ${profile.countryLookingFor || 'N/A'}`,
-      `Passport: ${profile.passportAvailable || 'No'}`,
-      `HR: ${profile.assignedToHR || 'None'}`,
-      `Interest: ${profile.interestLevel || 'N/A'}`,
-      `Status: ${profile.serviceChargesStatus || 'N/A'}`
+      `Name: ${profile.candidateName}`,
+      `Contact: ${profile.contactNumber}`,
+      `Designation: ${profile.designation || 'N/A'}`,
+      `Industry: ${profile.industry || 'N/A'}`,
+      `Passport: ${profile.passportNumber || 'No'}`,
+      `Experience: ${profile.totalExperience || 'N/A'}`
     ].join(' | ');
 
     if (isUpdate) {
