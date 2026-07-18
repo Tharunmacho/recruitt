@@ -287,7 +287,16 @@ export default function App() {
           <Sidebar
             onLogout={handleLogout}
             candidateName={profile.firstName ? `${profile.firstName} ${profile.lastName}` : 'Candidate User'}
-            avatar={profile.profilePhoto && typeof profile.profilePhoto === 'object' ? profile.profilePhoto.url || profile.profilePhoto.base64 || '' : profile.profilePhoto as string || ''}
+            avatar={(() => {
+              let url = profile.profilePhoto && typeof profile.profilePhoto === 'object' 
+                ? profile.profilePhoto.url || profile.profilePhoto.base64 || '' 
+                : profile.profilePhoto as string || '';
+              if (url.startsWith('/api/')) {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+                return `${API_URL}${url}`;
+              }
+              return url;
+            })()}
             completionPercentage={currentCompletionPercentage}
             isOpen={isMobileSidebarOpen}
             setIsOpen={setIsMobileSidebarOpen}

@@ -195,14 +195,28 @@ export default function ProfilePreviewPage({
           
           {/* Avatar Area */}
           <div className="flex justify-center md:justify-start">
-            {profile.profilePhoto ? (
-              <img 
-                src={typeof profile.profilePhoto === 'object' ? (profile.profilePhoto as any).url || (profile.profilePhoto as any).base64 : profile.profilePhoto} 
-                alt={`${profile.firstName} ${profile.lastName}`} 
-                className="w-28 h-28 md:w-32 md:h-32 rounded-2xl object-cover border-2 border-slate-200 shadow-sm shrink-0"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
+            {profile.profilePhoto ? (() => {
+              // Ensure relative API URLs are properly pointed to the backend
+              const getImageUrl = () => {
+                let url = typeof profile.profilePhoto === 'object' 
+                  ? (profile.profilePhoto as any).url || (profile.profilePhoto as any).base64 
+                  : profile.profilePhoto;
+                if (!url) return '';
+                if (url.startsWith('/api/')) {
+                  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+                  return `${API_URL}${url}`;
+                }
+                return url;
+              };
+              return (
+                <img 
+                  src={getImageUrl()} 
+                  alt={`${profile.firstName} ${profile.lastName}`} 
+                  className="w-28 h-28 md:w-32 md:h-32 rounded-2xl object-cover border-2 border-slate-200 shadow-sm shrink-0"
+                  referrerPolicy="no-referrer"
+                />
+              );
+            })() : (
               <div className="w-28 h-28 md:w-32 md:h-32 rounded-2xl bg-slate-100 border border-slate-200 flex flex-col items-center justify-center text-slate-400 shrink-0">
                 <User className="w-12 h-12" />
                 <span className="text-[10px] mt-1 font-mono">No Image</span>

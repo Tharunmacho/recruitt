@@ -9,8 +9,12 @@ interface DocumentViewerModalProps {
 }
 
 export default function DocumentViewerModal({ url, filename, onClose }: DocumentViewerModalProps) {
+  // Ensure relative API URLs are properly pointed to the backend
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const displayUrl = url.startsWith('/api/') ? `${API_URL}${url}` : url;
+  
   // Determine if it's likely an image to render natively, otherwise use iframe for PDF/docs
-  const isImage = filename.match(/\.(jpeg|jpg|gif|png|webp)$/i) != null || url.includes('image');
+  const isImage = filename.match(/\.(jpeg|jpg|gif|png|webp)$/i) != null || displayUrl.includes('image');
 
   // Prevent scroll when open
   useEffect(() => {
@@ -30,7 +34,7 @@ export default function DocumentViewerModal({ url, filename, onClose }: Document
           </h3>
           <div className="flex items-center space-x-2 shrink-0">
             <a 
-              href={url} 
+              href={displayUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className="p-2 text-slate-500 hover:bg-slate-200 hover:text-slate-800 rounded-lg transition-colors flex items-center space-x-1"
@@ -53,13 +57,13 @@ export default function DocumentViewerModal({ url, filename, onClose }: Document
         <div className="flex-1 overflow-auto bg-slate-100 flex items-center justify-center p-4">
           {isImage ? (
             <img 
-              src={url} 
+              src={displayUrl} 
               alt={filename}
               className="max-w-full max-h-full object-contain rounded-lg shadow-sm"
             />
           ) : (
             <iframe 
-              src={url} 
+              src={displayUrl} 
               title={filename}
               className="w-full h-full rounded-lg bg-white shadow-sm border border-slate-200"
             />
