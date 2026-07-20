@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, XCircle, Search, User, Briefcase, DollarSign, Calendar, Trash2, Edit2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Search, User, Briefcase, IndianRupee, Calendar, Trash2, Edit2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getCandidatesFromDb, getOrdersFromDb, getClientsFromDb, updateOrderInDb, deleteOrderFromDb, saveShortlistedCandidateToDb, getShortlistedCandidatesForOrder } from '../services/db';
 import { CandidateProfile, Order, OrderCandidate } from '../types';
@@ -293,7 +293,7 @@ export default function OrderDetailsPage() {
           <div>
             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Expected Salary</p>
             <p className="text-sm font-semibold text-slate-800 flex items-center">
-              <DollarSign className="w-3.5 h-3.5 mr-1 text-slate-400" />
+              <IndianRupee className="w-3.5 h-3.5 mr-1 text-slate-400" />
               {order.expectedSalary}
             </p>
           </div>

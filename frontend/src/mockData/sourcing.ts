@@ -32,7 +32,7 @@ export const INITIAL_ORDERS: Order[] = [
     title: 'Senior Project Managers',
     requiredSkillset: 'Project Management, Construction, Leadership',
     headcount: 3,
-    expectedSalary: '$80,000 - $120,000',
+    expectedSalary: '₹80,000 - ₹120,000',
     dueDate: new Date(Date.now() + 86400000 * 14).toISOString(), // 14 days from now
     remarks: 'Urgent requirement for upcoming downtown project.',
     status: 'Open',

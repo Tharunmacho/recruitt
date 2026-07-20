@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail } from 'lucide-react';
+import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail, X, Building, Contact } from 'lucide-react';
 import { Client, ClientType } from '../types';
 import { saveClientToDb, getClientsFromDb } from '../services/db';
+import SearchableDropdown from '../components/SearchableDropdown';
 
 export default function SourcingPage() {
   const [activeTab, setActiveTab] = useState<ClientType>('Association');
@@ -193,120 +194,137 @@ export default function SourcingPage() {
         )}
       </div>
 
-      {/* Premium Create Client Modal */}
+      {/* Create Client Modal - Enhanced Design */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-xl premium-modal p-8 rounded-3xl"
+            className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl my-auto overflow-hidden flex flex-col"
+            style={{ maxHeight: 'calc(100vh - 2rem)' }}
           >
-            <h3 className="text-2xl font-bold text-slate-900 font-display mb-6">Create New Client</h3>
+            {/* Header Sticky */}
+            <div className="flex items-center justify-between px-8 py-6 border-b border-slate-100 bg-white sticky top-0 z-10">
+              <div>
+                <h3 className="text-2xl font-bold text-slate-900 font-display">Create New Client</h3>
+                <p className="text-slate-500 text-xs mt-1">Fill in the client details below</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
             
-            <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="premium-label">Client Type</label>
-                  <select 
-                    className="w-full premium-input py-3 px-4 text-sm font-medium"
+            <div className="p-8 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Client Type</label>
+                  <SearchableDropdown
                     value={formClientType}
-                    onChange={(e) => setFormClientType(e.target.value as ClientType)}
-                  >
-                    <option value="Association">Association</option>
-                    <option value="Business">Business</option>
-                  </select>
+                    onChange={(val) => setFormClientType(val as ClientType)}
+                    options={["Association", "Business"]}
+                    placeholder="Select Type..."
+                  />
                 </div>
-                <div>
-                  <label className="premium-label">{formClientType === 'Association' ? 'Association Name' : 'Company Name'}</label>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{formClientType === 'Association' ? 'Association Name' : 'Company Name'}</label>
                   <input 
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" 
                     placeholder={`e.g. Apex ${formClientType === 'Association' ? 'Association' : 'Inc.'}`} 
                   />
                 </div>
-              </div>
 
-              {formClientType === 'Business' && (
-                <div className="grid grid-cols-2 gap-5">
-                  <div>
-                    <label className="premium-label">Industry / Sector</label>
-                    <input type="text" className="w-full premium-input py-3 px-4 text-sm font-medium" placeholder="e.g. IT Services" />
-                  </div>
-                  <div>
-                    <label className="premium-label">Company Registration No.</label>
-                    <input type="text" className="w-full premium-input py-3 px-4 text-sm font-medium" placeholder="e.g. CRN-12345" />
-                  </div>
-                </div>
-              )}
+                {formClientType === 'Business' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Industry / Sector</label>
+                      <SearchableDropdown
+                        value=""
+                        onChange={() => {}}
+                        options={["IT / Software", "Healthcare / Medical", "Finance / Banking", "Construction / Real Estate", "Engineering / Manufacturing", "Retail / E-Commerce", "Logistics / Transportation", "Other"]}
+                        placeholder="e.g. IT Services"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Company Registration No.</label>
+                      <input type="text" className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" placeholder="e.g. CRN-12345" />
+                    </div>
+                  </>
+                )}
 
-              {formClientType === 'Association' && (
-                <div>
-                  <label className="premium-label">Non-Profit Registration No.</label>
-                  <input type="text" className="w-full premium-input py-3 px-4 text-sm font-medium" placeholder="e.g. NP-98765" />
-                </div>
-              )}
-              
-              <div className="grid grid-cols-2 gap-5">
-                <div>
-                  <label className="premium-label">{formClientType === 'Association' ? 'President / Chairman' : 'HR Contact Person'}</label>
+                {formClientType === 'Association' && (
+                  <div className="space-y-2 sm:col-span-2">
+                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Non-Profit Registration No.</label>
+                    <input type="text" className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" placeholder="e.g. NP-98765" />
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{formClientType === 'Association' ? 'President / Chairman' : 'HR Contact Person'}</label>
                   <input 
                     type="text" 
                     value={formData.contactPerson}
                     onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
                     placeholder="e.g. Jane Doe" 
                   />
                 </div>
-                <div>
-                  <label className="premium-label">Phone Number</label>
+
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
                   <input 
                     type="text" 
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
                     placeholder="e.g. +1 555-0199" 
                   />
                 </div>
-              </div>
-              
-              <div>
-                <label className="premium-label">Email Address</label>
-                <input 
-                  type="email" 
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full premium-input py-3 px-4 text-sm font-medium" 
-                  placeholder="e.g. contact@company.com" 
-                />
-              </div>
-              
-              <div>
-                <label className="premium-label">Head Office Address</label>
-                <textarea 
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="w-full premium-input py-3 px-4 text-sm font-medium h-24 resize-none" 
-                  placeholder="123 Corporate Blvd..."
-                ></textarea>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                  <input 
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
+                    placeholder="e.g. contact@company.com" 
+                  />
+                </div>
+
+                <div className="space-y-2 sm:col-span-2">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Head Office Address</label>
+                  <textarea 
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold h-24 resize-none" 
+                    placeholder="123 Corporate Blvd..."
+                  ></textarea>
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 flex justify-end space-x-3">
+            {/* Footer Sticky */}
+            <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 flex justify-end space-x-4 sticky bottom-0">
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-colors cursor-pointer"
+                className="px-6 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleCreateClient}
                 disabled={isSaving}
-                className="px-6 py-2.5 gradient-btn text-white text-sm font-bold rounded-xl cursor-pointer shadow-lg shadow-blue-500/30 disabled:opacity-50 flex items-center"
+                className="px-8 py-2.5 gradient-btn text-white text-sm font-bold rounded-xl cursor-pointer shadow-lg shadow-blue-500/30 disabled:opacity-50 flex items-center"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                Create Client
+                {isSaving ? 'Creating...' : 'Create Client'}
               </button>
             </div>
           </motion.div>

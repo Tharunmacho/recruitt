@@ -6,7 +6,8 @@ import {
   Check, 
   Save,
   Eye,
-  Globe
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -15,6 +16,7 @@ import {
 } from '../types';
 import FileUpload from '../components/FileUpload';
 import DocumentViewerModal from '../components/DocumentViewerModal';
+import SearchableDropdown from '../components/SearchableDropdown';
 
 interface CandidateFormPageProps {
   profile: CandidateProfile;
@@ -177,22 +179,12 @@ export default function CandidateFormPage({
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Qualification</label>
-              <input
-                type="text"
-                list="qualifications-list"
+              <SearchableDropdown
                 value={profile.highestQualification}
-                onChange={(e) => handleTextChange('highestQualification', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('highestQualification', val)}
+                options={["High School", "Diploma", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]}
                 placeholder="Select or type..."
               />
-              <datalist id="qualifications-list">
-                <option value="High School" />
-                <option value="Diploma" />
-                <option value="Bachelor's Degree" />
-                <option value="Master's Degree" />
-                <option value="PhD" />
-                <option value="Other" />
-              </datalist>
             </div>
 
             <div className="space-y-2">
@@ -262,99 +254,50 @@ export default function CandidateFormPage({
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Industry</label>
-              <input
-                type="text"
-                list="industry-list"
+              <SearchableDropdown
                 value={profile.industry}
-                onChange={(e) => handleTextChange('industry', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('industry', val)}
+                options={["IT / Software", "Healthcare / Medical", "Finance / Banking", "Construction / Real Estate", "Engineering / Manufacturing", "Retail / E-Commerce", "Education", "Other"]}
                 placeholder="Select or type..."
               />
-              <datalist id="industry-list">
-                <option value="IT / Software" />
-                <option value="Healthcare / Medical" />
-                <option value="Finance / Banking" />
-                <option value="Construction / Real Estate" />
-                <option value="Engineering / Manufacturing" />
-                <option value="Retail / E-Commerce" />
-                <option value="Education" />
-                <option value="Other" />
-              </datalist>
             </div>
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Exp.</label>
-              <input
-                type="text"
-                list="total-exp-list"
+              <SearchableDropdown
                 value={profile.totalExperience}
-                onChange={(e) => handleTextChange('totalExperience', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('totalExperience', val)}
+                options={["0 Years (Fresher)", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
                 placeholder="Years"
               />
-              <datalist id="total-exp-list">
-                <option value="0 Years (Fresher)" />
-                <option value="1 Year" />
-                <option value="2 Years" />
-                <option value="3 Years" />
-                <option value="4 Years" />
-                <option value="5 Years" />
-                <option value="6-10 Years" />
-                <option value="10+ Years" />
-              </datalist>
             </div>
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Indian Exp.</label>
-              <input
-                type="text"
-                list="indian-exp-list"
+              <SearchableDropdown
                 value={profile.indianExperience}
-                onChange={(e) => handleTextChange('indianExperience', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('indianExperience', val)}
+                options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
                 placeholder="Years"
               />
-              <datalist id="indian-exp-list">
-                <option value="0 Years" />
-                <option value="1 Year" />
-                <option value="2 Years" />
-                <option value="3 Years" />
-                <option value="4 Years" />
-                <option value="5 Years" />
-                <option value="6-10 Years" />
-                <option value="10+ Years" />
-              </datalist>
             </div>
 
             <div className="space-y-2">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Overseas Exp.</label>
-              <input
-                type="text"
-                list="overseas-exp-list"
+              <SearchableDropdown
                 value={profile.overseasExperience}
-                onChange={(e) => handleTextChange('overseasExperience', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('overseasExperience', val)}
+                options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
                 placeholder="Years"
               />
-              <datalist id="overseas-exp-list">
-                <option value="0 Years" />
-                <option value="1 Year" />
-                <option value="2 Years" />
-                <option value="3 Years" />
-                <option value="4 Years" />
-                <option value="5 Years" />
-                <option value="6-10 Years" />
-                <option value="10+ Years" />
-              </datalist>
             </div>
 
             <div className="space-y-2 md:col-span-3 xl:col-span-5">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Key Skills & Expertise</label>
-              <textarea
+              <SearchableDropdown
                 value={profile.keySkills}
-                onChange={(e) => handleTextChange('keySkills', e.target.value)}
-                rows={1}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                onChange={(val) => handleTextChange('keySkills', val)}
+                options={["Driver, Truck driver", "React, Node.js, Typescript", "Project Management", "Heavy Machinery Operation", "Customer Service", "Accounting & Finance", "Sales & Marketing", "Other"]}
                 placeholder="e.g. React, Node.js, Project Management"
               />
             </div>
