@@ -31,46 +31,49 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-slate-50">
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-transparent">
       {/* Background Ambient Glows */}
-      <div className="absolute top-1/4 left-1/4 w-[350px] h-[350px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-400/20 rounded-full blur-[120px] mix-blend-multiply" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-violet-500/20 rounded-full blur-[150px] mix-blend-multiply" />
+        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-fuchsia-400/10 rounded-full blur-[100px] mix-blend-multiply" />
+      </div>
 
       {/* Main Container */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-md z-10"
         id="login-card-container"
       >
-        <div className="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden glow-blue-lg">
+        <div className="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden glow-blue-lg backdrop-blur-3xl bg-white/70">
           {/* Accent light header band */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500" />
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500" />
 
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center glow-blue mb-4">
-              <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center glow-blue mb-5 shadow-lg shadow-blue-500/30">
+              <Sparkles className="w-7 h-7 text-white" />
             </div>
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 font-display">
-              NexHire Portal
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+              NexHire
             </h2>
-            <p className="text-slate-400 text-xs mt-1 tracking-wider uppercase font-mono">
-              Internal Recruitment Team
+            <p className="text-blue-600 text-xs mt-1.5 tracking-widest uppercase font-bold font-mono">
+              Internal Platform
             </p>
           </div>
 
-          <div className="mb-6 text-center">
-            <h3 className="text-base font-semibold text-slate-800 font-sans">Welcome Back</h3>
-            <p className="text-xs text-slate-500 mt-1">
-              Please log in to complete your candidate evaluation dossier.
+          <div className="mb-8 text-center">
+            <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Welcome Back</h3>
+            <p className="text-xs text-slate-500 mt-1.5 font-medium">
+              Please log in to manage your recruitment pipeline.
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               className="mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start space-x-2.5"
@@ -193,7 +196,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       {/* Forgot Password Modal */}
       {showForgotModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-sm glass-panel p-6 rounded-2xl border border-slate-200 text-center"

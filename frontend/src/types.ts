@@ -99,3 +99,43 @@ export interface SystemLog {
   userEmail: string;
   category: 'CREATE' | 'UPDATE' | 'DELETE' | 'SYSTEM';
 }
+
+// --- Sourcing & Order Management ---
+
+export type ClientType = 'Association' | 'Business';
+
+export interface Client {
+  id: string;
+  type: ClientType;
+  name: string;
+  contactPerson: string;
+  email: string;
+  phone: string;
+  address: string;
+  status: 'Active' | 'Inactive';
+  createdAt: string;
+}
+
+export interface Order {
+  id: string;
+  clientId: string; // References Client.id
+  title: string; // E.g., "Manual Drivers Needed"
+  requiredIndustry: string;
+  requiredDesignation: string;
+  requiredExperience: string; // E.g., "5" (years)
+  requiredSkillset: string;
+  headcount: number;
+  expectedSalary: string;
+  dueDate: string;
+  remarks: string;
+  status: 'Open' | 'Fulfilled' | 'Closed';
+  createdAt: string;
+}
+
+export interface OrderCandidate {
+  id: string;
+  orderId: string;
+  candidateId: string;
+  status: 'Matched' | 'Selected' | 'Rejected';
+  matchedAt: string;
+}

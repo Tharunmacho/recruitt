@@ -351,3 +351,219 @@ export const getCandidateLogs = async (candidateId: string): Promise<SystemLog[]
     return [];
   }
 };
+
+// ==========================================
+// SOURCING & ORDERS DATABASE FUNCTIONS
+// ==========================================
+
+const ASSOC_COLLECTION = 'portal_associations';
+const BUS_COLLECTION = 'portal_businesses';
+const ORDERS_COLLECTION = 'portal_orders';
+const SHORTLISTED_COLLECTION = 'portal_shortlisted_candidates';
+
+/**
+ * Helper function to generate a guaranteed unique, auto-incrementing ID like BUS-001 or ORD-005
+ * @param collectionName The Firebase collection name
+ * @param prefix The string prefix (e.g., 'BUS', 'ASS', 'ORD')
+ */
+const generateAutoIncrementId = async (collectionName: string, prefix: string): Promise<string> => {
+  const q = query(collection(db, collectionName));
+  const querySnapshot = await getDocs(q);
+  
+  let maxNum = 0;
+  
+  querySnapshot.forEach((doc) => {
+    // The doc ID itself is exactly like 'BUS-004' or 'ORD-012'
+    if (doc.id.startsWith(prefix + '-')) {
+      const numPart = parseInt(doc.id.replace(prefix + '-', ''), 10);
+      if (!isNaN(numPart) && numPart > maxNum) {
+        maxNum = numPart;
+      }
+    }
+  });
+  
+  const nextNum = maxNum + 1;
+  // Pad with leading zeros (e.g. 001, 002)
+  const paddedNum = nextNum.toString().padStart(3, '0');
+  
+  return `${prefix}-${paddedNum}`;
+};
+
+/**
+ * Saves a new Client (Association or Business) to Firestore with a custom ID
+ */
+export const saveClientToDb = async (clientData: any, type: 'Association' | 'Business'): Promise<any> => {
+  try {
+    const isAssoc = type === 'Association';
+    const prefix = isAssoc ? 'ASS' : 'BUS';
+    const collectionName = isAssoc ? ASSOC_COLLECTION : BUS_COLLECTION;
+    
+    const newCustomId = await generateAutoIncrementId(collectionName, prefix);
+    
+    const docData = {
+      ...clientData,
+      id: newCustomId,
+      type: type,
+      status: 'Active',
+      createdAt: new Date().toISOString()
+    };
+    
+    // Use setDoc so the Firebase Document ID is EXACTLY the custom ID
+    await setDoc(doc(db, collectionName, newCustomId), docData);
+    
+    return docData;
+  } catch (error) {
+    console.error("Error saving client: ", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches all clients from Firestore
+ */
+export const getClientsFromDb = async (): Promise<any[]> => {
+  try {
+    const [assocSnap, busSnap] = await Promise.all([
+      getDocs(query(collection(db, ASSOC_COLLECTION), orderBy('createdAt', 'desc'))),
+      getDocs(query(collection(db, BUS_COLLECTION), orderBy('createdAt', 'desc')))
+    ]);
+    
+    const clients: any[] = [];
+    assocSnap.forEach((doc) => clients.push(doc.data()));
+    busSnap.forEach((doc) => clients.push(doc.data()));
+    
+    // Sort the combined array by createdAt descending
+    return clients.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.error("Error fetching clients: ", error);
+    return [];
+  }
+};
+
+/**
+ * Saves a new Job Order to Firestore with a custom ID
+ */
+export const saveOrderToDb = async (orderData: any): Promise<any> => {
+  try {
+    const newCustomId = await generateAutoIncrementId(ORDERS_COLLECTION, 'ORD');
+    
+    const docData = {
+      ...orderData,
+      id: newCustomId,
+      status: 'Open',
+      createdAt: new Date().toISOString()
+    };
+    
+    await setDoc(doc(db, ORDERS_COLLECTION, newCustomId), docData);
+    return docData;
+  } catch (error) {
+    console.error("Error saving order: ", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches all Job Orders from Firestore
+ */
+export const getOrdersFromDb = async (): Promise<any[]> => {
+  try {
+    const q = query(collection(db, ORDERS_COLLECTION), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    
+    const orders: any[] = [];
+    querySnapshot.forEach((doc) => {
+      orders.push(doc.data());
+    });
+    return orders;
+  } catch (error) {
+    console.error("Error fetching orders: ", error);
+    return [];
+  }
+};
+
+/**
+ * Updates a Job Order in Firestore (e.g., closing it)
+ */
+export const updateOrderInDb = async (orderId: string, updates: any): Promise<void> => {
+  try {
+    const docRef = doc(db, ORDERS_COLLECTION, orderId);
+    await updateDoc(docRef, updates);
+  } catch (error) {
+    console.error("Error updating order: ", error);
+    throw error;
+  }
+};
+
+/**
+ * Permanently deletes a Job Order from Firestore
+ */
+export const deleteOrderFromDb = async (orderId: string): Promise<void> => {
+  try {
+    const { deleteDoc } = await import('firebase/firestore');
+    const docRef = doc(db, ORDERS_COLLECTION, orderId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error("Error deleting order: ", error);
+    throw error;
+  }
+};
+
+/**
+ * Saves a shortlisted or rejected candidate to Firestore with a custom ID
+ */
+export const saveShortlistedCandidateToDb = async (orderId: string, candidateId: string, status: 'Selected' | 'Rejected'): Promise<any> => {
+  try {
+    // Check if the candidate is already shortlisted for this order to avoid duplicates
+    const q = query(
+      collection(db, SHORTLISTED_COLLECTION),
+      where('orderId', '==', orderId),
+      where('candidateId', '==', candidateId)
+    );
+    const existingSnap = await getDocs(q);
+    
+    if (!existingSnap.empty) {
+      // Update existing record
+      const docRef = doc(db, SHORTLISTED_COLLECTION, existingSnap.docs[0].id);
+      await updateDoc(docRef, { status, matchedAt: new Date().toISOString() });
+      return { id: existingSnap.docs[0].id, orderId, candidateId, status, matchedAt: new Date().toISOString() };
+    }
+
+    // Create a new record with custom ID
+    const newCustomId = await generateAutoIncrementId(SHORTLISTED_COLLECTION, 'SHC');
+    const docData = {
+      id: newCustomId,
+      orderId,
+      candidateId,
+      status,
+      matchedAt: new Date().toISOString()
+    };
+    
+    await setDoc(doc(db, SHORTLISTED_COLLECTION, newCustomId), docData);
+    return docData;
+  } catch (error) {
+    console.error("Error saving shortlisted candidate: ", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches all shortlisted candidates for a specific order
+ */
+export const getShortlistedCandidatesForOrder = async (orderId: string): Promise<any[]> => {
+  try {
+    const q = query(
+      collection(db, SHORTLISTED_COLLECTION),
+      where('orderId', '==', orderId)
+    );
+    const querySnapshot = await getDocs(q);
+    
+    const candidates: any[] = [];
+    querySnapshot.forEach((doc) => {
+      candidates.push(doc.data());
+    });
+    return candidates;
+  } catch (error) {
+    console.error("Error fetching shortlisted candidates: ", error);
+    return [];
+  }
+};

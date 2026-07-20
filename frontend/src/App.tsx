@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Menu, 
-  Sparkles, 
-  Bell, 
-  CheckCircle, 
-  AlertTriangle, 
-  Settings, 
-  Trash2, 
-  FileText, 
+import {
+  Menu,
+  Sparkles,
+  Bell,
+  CheckCircle,
+  AlertTriangle,
+  Settings,
+  Trash2,
+  FileText,
   ArrowLeft,
   X,
   Lock,
@@ -32,6 +32,9 @@ import Dashboard from './pages/Dashboard';
 import CandidateFormPage from './pages/CandidateFormPage';
 import ProfilePreviewPage from './pages/ProfilePreviewPage';
 import CandidatesTablePage from './pages/CandidatesTablePage';
+import SourcingPage from './pages/SourcingPage';
+import OrdersListPage from './pages/OrdersListPage';
+import OrderDetailsPage from './pages/OrderDetailsPage';
 
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
@@ -72,11 +75,11 @@ export default function App() {
         // Fallback
       }
     }
-    return EMPTY_PROFILE; 
+    return EMPTY_PROFILE;
   });
 
   const [savedProfile, setSavedProfile] = useState<CandidateProfile>(profile);
-  const [sidebarViewerDoc, setSidebarViewerDoc] = useState<{url: string, filename: string} | null>(null);
+  const [sidebarViewerDoc, setSidebarViewerDoc] = useState<{ url: string, filename: string } | null>(null);
 
   const [candidates, setCandidates] = useState<CandidateProfile[]>([]);
   const [isLoadingCandidates, setIsLoadingCandidates] = useState(true);
@@ -150,7 +153,7 @@ export default function App() {
 
     // Weight 1: Personal Info (35%)
     const personalKeys: (keyof CandidateProfile)[] = [
-      'candidateName', 'dateOfBirth', 'highestQualification', 
+      'candidateName', 'dateOfBirth', 'highestQualification',
       'contactNumber', 'whatsappNumber', 'email', 'address'
     ];
     personalKeys.forEach(k => {
@@ -160,7 +163,7 @@ export default function App() {
 
     // Weight 2: Professional Info (30%)
     const profKeys: (keyof CandidateProfile)[] = [
-      'designation', 'industry', 'totalExperience', 
+      'designation', 'industry', 'totalExperience',
       'indianExperience', 'overseasExperience', 'keySkills'
     ];
     profKeys.forEach(k => {
@@ -255,7 +258,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-blue-600 selection:text-white">
-      
+
       {/* Toast Messages */}
       <AnimatePresence>
         {toastMessage && (
@@ -275,14 +278,14 @@ export default function App() {
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : (
         <div className="flex h-screen overflow-hidden">
-          
+
           {/* Collapsible Sidebar */}
           <Sidebar
             onLogout={handleLogout}
             candidateName={profile.candidateName || 'Candidate User'}
             avatar={(() => {
-              let url = profile.profilePhoto && typeof profile.profilePhoto === 'object' 
-                ? profile.profilePhoto.url || profile.profilePhoto.base64 || '' 
+              let url = profile.profilePhoto && typeof profile.profilePhoto === 'object'
+                ? profile.profilePhoto.url || profile.profilePhoto.base64 || ''
                 : profile.profilePhoto as string || '';
               if (url.startsWith('/api/')) {
                 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4005';
@@ -309,13 +312,13 @@ export default function App() {
 
           {/* Main Workspace Frame */}
           <div className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-slate-50">
-            
+
             {/* Top Toolbar Navigation Header - Print Hidden */}
-            <header className="sticky top-0 z-20 h-20 shrink-0 border-b border-slate-200 bg-white/85 backdrop-blur-xl flex items-center justify-between px-6 print:hidden">
+            <header className="sticky top-0 z-20 h-20 shrink-0 border-b border-slate-200/50 bg-white/60 backdrop-blur-xl flex items-center justify-between px-6 print:hidden shadow-sm shadow-slate-200/20">
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setIsMobileSidebarOpen(true)}
-                  className="md:hidden p-2 hover:bg-slate-100 rounded-xl text-slate-500 hover:text-slate-900 transition-all"
+                  className="md:hidden p-2 hover:bg-slate-100/50 rounded-xl text-slate-500 hover:text-slate-900 transition-all"
                   title="Open Sidebar"
                 >
                   <Menu className="w-5 h-5" />
@@ -324,8 +327,8 @@ export default function App() {
                   <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider font-mono">
                     HR INTERNAL SYSTEM
                   </span>
-                  <h2 className="text-xs font-semibold text-slate-500 capitalize">
-                    Workspace / {location.pathname === '/' ? 'login' : location.pathname.substring(1).replace('-', ' ')}
+                  <h2 className="text-sm font-bold text-slate-800 capitalize font-display">
+                    Workspace <span className="text-slate-400 font-normal mx-1">/</span> {location.pathname === '/' ? 'dashboard' : location.pathname.substring(1).replace('-', ' ')}
                   </h2>
                 </div>
               </div>
@@ -338,13 +341,13 @@ export default function App() {
                     {user.profileStatus === 'Submitted' ? '✓ SUBMITTED TO HR' : '⚠️ INCOMPLETE DRAFT'}
                   </span>
                 </div>
-                
+
               </div>
             </header>
 
             {/* Inner Content Scroller */}
             <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6 print:p-0">
-              
+
               {/* Conditional Routing Pages */}
               <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -384,6 +387,9 @@ export default function App() {
                     onDelete={handleDeleteCandidate}
                   />
                 } />
+                <Route path="/sourcing" element={<SourcingPage />} />
+                <Route path="/orders" element={<OrdersListPage />} />
+                <Route path="/orders/:id" element={<OrderDetailsPage />} />
               </Routes>
 
             </main>
