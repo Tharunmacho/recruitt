@@ -16,7 +16,9 @@ import {
   Mail,
   ShieldCheck,
   UserCheck,
-  Smartphone
+  Smartphone,
+  LogOut,
+  ChevronDown
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -44,6 +46,7 @@ export default function App() {
   // Navigation & UI States
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Authentication state
@@ -314,39 +317,69 @@ export default function App() {
           <div className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-slate-50">
 
             {/* Top Toolbar Navigation Header - Print Hidden */}
-            <header className="sticky top-0 z-20 h-20 shrink-0 border-b border-slate-200/50 bg-white/60 backdrop-blur-xl flex items-center justify-between px-6 print:hidden shadow-sm shadow-slate-200/20">
-              <div className="flex items-center space-x-4">
+            <header className="sticky top-0 z-20 h-16 shrink-0 border-b-[3px] border-[#0047ba] bg-white flex items-center justify-between px-6 print:hidden shadow-sm">
+              <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setIsMobileSidebarOpen(true)}
-                  className="md:hidden p-2 hover:bg-slate-100/50 rounded-xl text-slate-500 hover:text-slate-900 transition-all"
+                  className="md:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-500 hover:text-slate-900 transition-all"
                   title="Open Sidebar"
                 >
                   <Menu className="w-5 h-5" />
                 </button>
-                <div className="text-left">
-                  <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider font-mono">
-                    HR INTERNAL SYSTEM
-                  </span>
-                  <h2 className="text-sm font-bold text-slate-800 capitalize font-display">
-                    Workspace <span className="text-slate-400 font-normal mx-1">/</span> {location.pathname === '/' ? 'dashboard' : location.pathname.substring(1).replace('-', ' ')}
+                <div className="flex items-center text-slate-800 space-x-2">
+                  <div className="w-4 h-4 border-2 border-slate-400 rounded-sm" /> {/* Decorative icon like reference */}
+                  <h2 className="text-lg font-bold capitalize">
+                    {location.pathname === '/' ? 'Dashboard' : location.pathname.substring(1).replace('-', ' ')}
                   </h2>
                 </div>
               </div>
 
               {/* Status block top panel */}
-              <div className="flex items-center space-x-4">
-                <div className="hidden sm:flex flex-col items-end text-xs text-right">
-                  <span className="text-slate-400 font-mono">Evaluation Dossier Status:</span>
-                  <span className={`font-mono font-bold ${user.profileStatus === 'Submitted' ? 'text-emerald-600' : 'text-amber-600'}`}>
-                    {user.profileStatus === 'Submitted' ? '✓ SUBMITTED TO HR' : '⚠️ INCOMPLETE DRAFT'}
-                  </span>
-                </div>
+              <div className="flex items-center space-x-6">
+                {/* Profile Block with Dropdown */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                    className="flex items-center space-x-3 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-[#0047ba] text-white flex items-center justify-center font-bold text-xs uppercase">
+                      {user.email ? user.email.charAt(0) : 'U'}
+                    </div>
+                    <div className="hidden sm:flex flex-col text-right">
+                      <span className="text-sm font-bold text-slate-800 flex items-center justify-end space-x-2 capitalize">
+                        {user.email ? user.email.split('@')[0] : 'User'} <span className="ml-2 px-1.5 py-0.5 bg-[#0047ba] text-white text-[10px] rounded-md">Admin</span>
+                      </span>
+                      <span className="text-xs text-slate-500">{user.email || 'user@company.com'}</span>
+                    </div>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
 
+                  {/* Dropdown Menu */}
+                  <AnimatePresence>
+                    {isProfileDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-2 z-50"
+                      >
+                        <button 
+                          onClick={handleLogout}
+                          className="w-full flex items-center space-x-3 px-4 py-2 text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span className="text-sm font-medium">Sign out</span>
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </header>
 
             {/* Inner Content Scroller */}
-            <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6 print:p-0">
+            <main className="flex-1 p-6 w-full space-y-6 print:p-0">
 
               {/* Conditional Routing Pages */}
               <Routes>

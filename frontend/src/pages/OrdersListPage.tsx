@@ -83,7 +83,7 @@ export default function OrdersListPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -133,18 +133,20 @@ export default function OrdersListPage() {
               whileHover={{ y: -5, scale: 1.01 }}
               transition={{ duration: 0.2 }}
               onClick={() => navigate(`/orders/${order.id}`)}
-              className="glass-panel p-6 rounded-2xl flex flex-col group hover:border-blue-300 transition-all duration-300 hover:shadow-xl cursor-pointer"
+              className="bg-white rounded-2xl flex flex-col group transition-all duration-300 shadow-sm hover:shadow-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-slate-300"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-800 line-clamp-1 mb-1 group-hover:text-blue-600 transition-colors">
-                    {order.title}
-                  </h3>
-                  <div className="flex items-center space-x-2 text-xs text-slate-500">
-                    <Briefcase className="w-3.5 h-3.5 text-blue-500" />
-                    <span>{getClientName(order.clientId)}</span>
+              <div className="h-1.5 w-full bg-[#0047ba]" />
+              <div className="p-6 flex flex-col h-full">
+                <div className="flex justify-between items-start mb-5">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 line-clamp-1 mb-1 group-hover:text-[#0047ba] transition-colors">
+                      {order.title}
+                    </h3>
+                    <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-md inline-flex border border-slate-100">
+                      <Briefcase className="w-3.5 h-3.5 text-blue-500" />
+                      <span>{getClientName(order.clientId)}</span>
+                    </div>
                   </div>
-                </div>
                 <div className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
                   order.status === 'Open' ? 'bg-amber-50 text-amber-600 border-amber-100' :
                   order.status === 'Fulfilled' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
@@ -154,26 +156,26 @@ export default function OrdersListPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 my-5 py-4 border-y border-slate-100">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                    <Users className="w-4 h-4 text-indigo-500" />
+                <div className="grid grid-cols-2 gap-4 my-6">
+                  <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 border border-slate-100 group-hover:bg-indigo-50/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
+                      <Users className="w-4 h-4 text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Headcount</p>
+                      <p className="text-sm font-bold text-slate-700">{order.headcount} required</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Headcount</p>
-                    <p className="text-sm font-semibold text-slate-700">{order.headcount} required</p>
+                  <div className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 border border-slate-100 group-hover:bg-emerald-50/50 transition-colors">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                      <DollarSign className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Salary</p>
+                      <p className="text-sm font-bold text-slate-700">{order.expectedSalary}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                    <DollarSign className="w-4 h-4 text-emerald-500" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Expected Salary</p>
-                    <p className="text-sm font-semibold text-slate-700">{order.expectedSalary}</p>
-                  </div>
-                </div>
-              </div>
 
               <div className="space-y-2 mb-4 flex-1">
                 <p className="text-xs text-slate-600 line-clamp-2">
@@ -186,12 +188,13 @@ export default function OrdersListPage() {
                 )}
               </div>
 
-              <div className="mt-auto pt-4 flex items-center justify-between text-xs font-mono text-slate-400 bg-slate-50/50 -mx-6 -mb-6 px-6 py-4 rounded-b-2xl border-t border-slate-100">
-                <div className="flex items-center text-rose-500 font-medium">
-                  <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                  Due: {new Date(order.dueDate).toLocaleDateString()}
+                <div className="mt-auto pt-5 mt-5 flex items-center justify-between text-xs font-mono text-slate-400 border-t border-slate-100">
+                  <div className="flex items-center text-rose-500 font-medium">
+                    <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                    Due: {new Date(order.dueDate).toLocaleDateString()}
+                  </div>
+                  <span>ID: {order.id}</span>
                 </div>
-                <span>ID: {order.id}</span>
               </div>
             </motion.div>
           ))

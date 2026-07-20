@@ -65,11 +65,11 @@ export default function Dashboard({
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-          HR Command Center
+        <h1 className="text-3xl font-bold font-display text-slate-900 tracking-tight">
+          Welcome to your Dashboard
         </h1>
-        <p className="text-slate-500 text-xs mt-1">
-          High-level overview of recruitment pipeline and portal metrics.
+        <p className="text-slate-500 text-sm mt-2 flex items-center">
+          <span className="mr-2">📅</span> {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
 
@@ -80,81 +80,65 @@ export default function Dashboard({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -5, scale: 1.02 }}
-          transition={{ duration: 0.3 }}
-          className="glass-panel p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[150px] border-l-4 border-l-cyan-500 hover:shadow-cyan-500/20 shadow-lg cursor-default"
+          className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[160px] border border-[#e5d5f5] bg-[#fcf9ff] shadow-sm"
         >
-          <div className="absolute top-[-50%] right-[-10%] w-[150px] h-[150px] bg-cyan-400/10 rounded-full blur-[40px] pointer-events-none" />
-          <div className="flex justify-between items-start relative z-10">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-bold text-slate-500 tracking-wider uppercase font-mono mb-2">
+              <p className="text-[13px] font-bold text-[#8a4bbb] mb-3">
                 Total Candidates
               </p>
-              <h2 className="text-4xl font-extrabold font-display text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600">
+              <h2 className="text-5xl font-extrabold text-[#8a4bbb]">
                 {totalCandidates}
               </h2>
             </div>
-            <div className="p-3.5 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-2xl text-cyan-600 shadow-sm border border-cyan-100/50">
-              <Database className="w-6 h-6" />
+            <div className="p-2.5 bg-[#f3e8fc] rounded-xl text-[#8a4bbb]">
+              <Users className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-5 flex items-center font-medium relative z-10">
-            <span className="text-emerald-500 font-bold mr-1.5 px-2 py-0.5 bg-emerald-50 rounded-md">+12%</span> vs last month
-          </p>
         </motion.div>
 
         {/* Shortlisted Candidates */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -5, scale: 1.02 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-          className="glass-panel p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[150px] border-l-4 border-l-violet-500 hover:shadow-violet-500/20 shadow-lg cursor-default"
+          transition={{ delay: 0.1 }}
+          className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[160px] border border-[#f5e4cc] bg-[#fffbf2] shadow-sm"
         >
-          <div className="absolute top-[-50%] right-[-10%] w-[150px] h-[150px] bg-violet-400/10 rounded-full blur-[40px] pointer-events-none" />
-          <div className="flex justify-between items-start relative z-10">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-bold text-slate-500 tracking-wider uppercase font-mono mb-2">
-                Shortlisted
+              <p className="text-[13px] font-bold text-[#c77119] mb-3">
+                Candidates Selected
               </p>
-              <h2 className="text-4xl font-extrabold font-display text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600">
+              <h2 className="text-5xl font-extrabold text-[#d65d00]">
                 {shortlistedCandidates}
               </h2>
             </div>
-            <div className="p-3.5 bg-gradient-to-br from-violet-50 to-fuchsia-50 rounded-2xl text-violet-600 shadow-sm border border-violet-100/50">
-              <UserCheck className="w-6 h-6" />
+            <div className="p-2.5 bg-[#fcead7] rounded-xl text-[#d65d00]">
+              <BarChart3 className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-5 flex items-center font-medium relative z-10">
-            High intent conversions ready for HR
-          </p>
         </motion.div>
 
         {/* New Entries */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -5, scale: 1.02 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
-          className="glass-panel p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[150px] border-l-4 border-l-rose-500 hover:shadow-rose-500/20 shadow-lg cursor-default"
+          transition={{ delay: 0.2 }}
+          className="glass-panel p-6 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[160px] border border-[#ccedd9] bg-[#f0fbf4] shadow-sm"
         >
-          <div className="absolute top-[-50%] right-[-10%] w-[150px] h-[150px] bg-rose-400/10 rounded-full blur-[40px] pointer-events-none" />
-          <div className="flex justify-between items-start relative z-10">
+          <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs font-bold text-slate-500 tracking-wider uppercase font-mono mb-2">
-                New Entries
+              <p className="text-[13px] font-bold text-[#147a40] mb-3">
+                New Profiles Today
               </p>
-              <h2 className="text-4xl font-extrabold font-display text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600">
+              <h2 className="text-5xl font-extrabold text-[#118c46]">
                 {newCandidates}
               </h2>
             </div>
-            <div className="p-3.5 bg-gradient-to-br from-rose-50 to-orange-50 rounded-2xl text-rose-600 shadow-sm border border-rose-100/50">
-              <Sparkles className="w-6 h-6" />
+            <div className="p-2.5 bg-[#dcf5e6] rounded-xl text-[#118c46]">
+              <UserPlus className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-xs text-slate-500 mt-5 flex items-center font-medium relative z-10">
-            Awaiting screening and telecalling
-          </p>
         </motion.div>
 
       </div>

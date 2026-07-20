@@ -192,7 +192,7 @@ export default function OrderDetailsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       
       {/* Top bar */}
       <button 

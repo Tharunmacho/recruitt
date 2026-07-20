@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users } from 'lucide-react';
+import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail } from 'lucide-react';
 import { Client, ClientType } from '../types';
 import { saveClientToDb, getClientsFromDb } from '../services/db';
 
@@ -63,7 +63,7 @@ export default function SourcingPage() {
   );
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -84,8 +84,8 @@ export default function SourcingPage() {
       </div>
 
       {/* Tabs & Search */}
-      <div className="glass-panel p-2 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex p-1 bg-slate-100/50 rounded-xl w-full md:w-auto">
+      <div className="bg-[#f0f7ff] border border-[#cce4ff] p-2 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex p-1 bg-white/50 rounded-xl w-full md:w-auto">
           <button
             onClick={() => setActiveTab('Association')}
             className={`flex-1 md:flex-none flex items-center justify-center space-x-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
@@ -137,46 +137,51 @@ export default function SourcingPage() {
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ y: -5, scale: 1.01 }}
               transition={{ duration: 0.2 }}
-              className="glass-panel p-6 rounded-2xl flex flex-col justify-between group hover:border-blue-300 transition-all shadow-sm hover:shadow-xl cursor-pointer"
+              className="bg-white rounded-2xl flex flex-col justify-between group transition-all shadow-sm hover:shadow-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-slate-300"
             >
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center glow-blue shrink-0">
-                    {client.type === 'Association' ? (
-                      <Building2 className="w-5 h-5" />
-                    ) : (
-                      <Briefcase className="w-5 h-5" />
-                    )}
+              <div className={`h-1.5 w-full ${client.type === 'Association' ? 'bg-[#8a4bbb]' : 'bg-[#d65d00]'}`} />
+              <div className="p-6 flex flex-col h-full justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                      client.type === 'Association' ? 'bg-[#f3e8fc] text-[#8a4bbb]' : 'bg-[#fcead7] text-[#d65d00]'
+                    }`}>
+                      {client.type === 'Association' ? (
+                        <Building2 className="w-5 h-5" />
+                      ) : (
+                        <Briefcase className="w-5 h-5" />
+                      )}
+                    </div>
+                    <button className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
-                    <MoreVertical className="w-4 h-4" />
-                  </button>
-                </div>
-                
-                <h3 className="text-lg font-bold text-slate-800 line-clamp-1 mb-1">{client.name}</h3>
-                <div className="inline-block px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold uppercase tracking-wider rounded-md mb-4 border border-emerald-100">
-                  {client.status}
+                  
+                  <h3 className="text-lg font-bold text-slate-900 line-clamp-1 mb-2">{client.name}</h3>
+                  <div className="inline-block px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-md mb-5 border border-emerald-200">
+                    {client.status}
+                  </div>
+
+                  <div className="space-y-2 text-sm text-slate-600">
+                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
+                      <User className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="font-semibold text-slate-700 truncate">{client.contactPerson}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
+                      <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="font-semibold text-slate-700 truncate">{client.phone}</span>
+                    </div>
+                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
+                      <Mail className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="font-semibold text-slate-700 truncate">{client.email}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-2 text-sm text-slate-600">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-slate-400 w-16">Contact:</span>
-                    <span className="truncate">{client.contactPerson}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-slate-400 w-16">Phone:</span>
-                    <span>{client.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-slate-400 w-16">Email:</span>
-                    <span className="truncate">{client.email}</span>
-                  </div>
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-400">
+                  <span>ID: {client.id}</span>
+                  <span>{new Date(client.createdAt).toLocaleDateString()}</span>
                 </div>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-400">
-                <span>ID: {client.id}</span>
-                <span>{new Date(client.createdAt).toLocaleDateString()}</span>
               </div>
             </motion.div>
           ))

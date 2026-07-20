@@ -96,7 +96,7 @@ export default function CandidateFormPage({
   };
 
   return (
-    <div className="w-full max-w-[95%] xl:max-w-7xl mx-auto bg-white/60 backdrop-blur-3xl rounded-[2.5rem] shadow-2xl shadow-blue-900/5 border border-white p-8 md:p-14 text-left space-y-8 relative overflow-hidden" id="candidate-form-container">
+    <div className="w-full space-y-6" id="candidate-form-container">
       
       <AnimatePresence>
         {notification && (
@@ -133,15 +133,13 @@ export default function CandidateFormPage({
         </div>
       </div>
 
-      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50/50 to-transparent -z-10 pointer-events-none"></div>
-      
-            <form onSubmit={(e) => e.preventDefault()} className="space-y-6 md:space-y-8" id="dossier-full-form">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-6 md:space-y-8" id="dossier-full-form">
         
         {/* Personal Details */}
-        <div className="bg-white/40 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm p-6 md:p-8">
-          <div className="flex items-center space-x-3 border-b border-slate-200/50 pb-5 mb-6">
-            <div className="bg-blue-100/50 p-2.5 rounded-xl text-blue-600"><User className="w-5 h-5" /></div>
-            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Personal Details</h2>
+        <div className="rounded-xl border border-[#e5d5f5] bg-[#fcf9ff] shadow-sm p-6 md:p-8">
+          <div className="flex items-center space-x-3 border-b border-[#e5d5f5] pb-5 mb-6">
+            <div className="bg-[#f3e8fc] p-2.5 rounded-xl text-[#8a4bbb]"><User className="w-5 h-5" /></div>
+            <h2 className="text-lg font-bold text-[#8a4bbb] tracking-tight">Personal Details</h2>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -244,10 +242,10 @@ export default function CandidateFormPage({
         </div>
 
         {/* Professional Details */}
-        <div className="bg-white/40 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm p-6 md:p-8">
-          <div className="flex items-center space-x-3 border-b border-slate-200/50 pb-5 mb-6">
-            <div className="bg-indigo-100/50 p-2.5 rounded-xl text-indigo-600"><Briefcase className="w-5 h-5" /></div>
-            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Professional Details</h2>
+        <div className="rounded-xl border border-[#f5e4cc] bg-[#fffbf2] shadow-sm p-6 md:p-8">
+          <div className="flex items-center space-x-3 border-b border-[#f5e4cc] pb-5 mb-6">
+            <div className="bg-[#fcead7] p-2.5 rounded-xl text-[#d65d00]"><Briefcase className="w-5 h-5" /></div>
+            <h2 className="text-lg font-bold text-[#d65d00] tracking-tight">Professional Details</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
@@ -367,10 +365,10 @@ export default function CandidateFormPage({
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
           
           {/* Passport */}
-          <div className="bg-white/40 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm p-6 md:p-8">
-            <div className="flex items-center space-x-3 border-b border-slate-200/50 pb-5 mb-6">
-              <div className="bg-emerald-100/50 p-2.5 rounded-xl text-emerald-600"><Globe className="w-5 h-5" /></div>
-              <h2 className="text-lg font-bold text-slate-800 tracking-tight">Passport</h2>
+          <div className="rounded-xl border border-[#ccedd9] bg-[#f0fbf4] shadow-sm p-6 md:p-8">
+            <div className="flex items-center space-x-3 border-b border-[#ccedd9] pb-5 mb-6">
+              <div className="bg-[#dcf5e6] p-2.5 rounded-xl text-[#118c46]"><Globe className="w-5 h-5" /></div>
+              <h2 className="text-lg font-bold text-[#118c46] tracking-tight">Passport</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2">
@@ -396,10 +394,10 @@ export default function CandidateFormPage({
           </div>
 
           {/* File Uploads */}
-          <div className="bg-white/40 backdrop-blur-md rounded-3xl border border-white/60 shadow-sm p-6 md:p-8">
-            <div className="flex items-center space-x-3 border-b border-slate-200/50 pb-5 mb-6">
-              <div className="bg-orange-100/50 p-2.5 rounded-xl text-orange-600"><FileText className="w-5 h-5" /></div>
-              <h2 className="text-lg font-bold text-slate-800 tracking-tight">Documents</h2>
+          <div className="rounded-xl border border-[#cce4ff] bg-[#f0f7ff] shadow-sm p-6 md:p-8">
+            <div className="flex items-center space-x-3 border-b border-[#cce4ff] pb-5 mb-6">
+              <div className="bg-[#ddebff] p-2.5 rounded-xl text-[#0066ff]"><FileText className="w-5 h-5" /></div>
+              <h2 className="text-lg font-bold text-[#0066ff] tracking-tight">Documents</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <FileUpload
@@ -459,7 +457,7 @@ export default function CandidateFormPage({
             type="button"
             onClick={handleDirectSubmit}
             disabled={isSubmitting}
-            className="w-full sm:w-64 px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center space-x-2 disabled:opacity-70"
+            className="w-full sm:w-64 px-8 py-4 gradient-btn flex items-center justify-center space-x-2 disabled:opacity-70"
           >
             {isSubmitting ? (
               <>
