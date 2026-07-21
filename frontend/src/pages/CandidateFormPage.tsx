@@ -4,10 +4,9 @@ import {
   Briefcase, 
   FileText, 
   Check, 
-  Save,
   Eye,
   Globe,
-  ChevronDown
+  ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -97,8 +96,11 @@ export default function CandidateFormPage({
     triggerToast(`Removed document`);
   };
 
+  const inputClass = "w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none";
+  const labelClass = "block text-[12px] font-semibold text-slate-700 mb-1.5";
+
   return (
-    <div className="w-full space-y-6" id="candidate-form-container">
+    <div className="w-full max-w-6xl mx-auto space-y-6" id="candidate-form-container">
       
       <AnimatePresence>
         {notification && (
@@ -106,7 +108,7 @@ export default function CandidateFormPage({
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-xl flex items-center space-x-2.5 font-semibold text-xs"
+            className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-lg flex items-center space-x-2.5 font-semibold text-sm"
           >
             <Check className="w-4 h-4 text-emerald-600" />
             <span>{notification}</span>
@@ -114,235 +116,230 @@ export default function CandidateFormPage({
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center space-x-4">
           <button 
             type="button"
             onClick={() => window.history.back()} 
-            className="text-slate-500 hover:text-slate-900 flex items-center space-x-2 text-sm font-bold mb-6 transition-colors group"
+            className="text-slate-500 hover:text-slate-800 transition-colors"
           >
-            <div className="bg-slate-200/50 p-1.5 rounded-full group-hover:bg-slate-200 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-            </div>
-            <span>Back</span>
+            <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-            Candidate Form
-          </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Complete candidate details.
-          </p>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
+              Candidate Form
+            </h1>
+            <p className="text-slate-500 text-sm mt-0.5">
+              Complete candidate details.
+            </p>
+          </div>
         </div>
       </div>
 
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-6 md:space-y-8" id="dossier-full-form">
-        
-        {/* Personal Details */}
-        <div className="rounded-xl border border-[#e5d5f5] bg-[#fcf9ff] shadow-sm p-6 md:p-8">
-          <div className="flex items-center space-x-3 border-b border-[#e5d5f5] pb-5 mb-6">
-            <div className="bg-[#f3e8fc] p-2.5 rounded-xl text-[#8a4bbb]"><User className="w-5 h-5" /></div>
-            <h2 className="text-lg font-bold text-[#8a4bbb] tracking-tight">Personal Details</h2>
-          </div>
+      <div className="bg-white border border-slate-200 shadow-sm rounded">
+        <form onSubmit={(e) => e.preventDefault()} className="p-6 md:p-8 space-y-10" id="dossier-full-form">
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Candidate Name</label>
-              <input
-                type="text"
-                value={profile.candidateName}
-                onChange={(e) => handleTextChange('candidateName', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="e.g. Alex Mercer"
-              />
+          {/* Personal Information */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <User className="w-5 h-5 text-slate-600" />
+              <h2 className="text-[16px] font-bold text-slate-800">Personal Information</h2>
             </div>
+            <p className="text-[12px] text-slate-500 mt-1 mb-3">Basic candidate details and background</p>
+            <hr className="border-slate-200 mb-6" />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
+              <div>
+                <label className={labelClass}>Candidate Name <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={profile.candidateName}
+                  onChange={(e) => handleTextChange('candidateName', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Entry Date</label>
-              <input
-                type="date"
-                value={profile.entryDate}
-                readOnly
-                disabled
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-500 bg-slate-50/50 cursor-not-allowed text-sm"
-              />
-            </div>
+              <div>
+                <label className={labelClass}>Date of Birth (DOB) <span className="text-red-500">*</span></label>
+                <input
+                  type="date"
+                  value={profile.dateOfBirth}
+                  onChange={(e) => handleTextChange('dateOfBirth', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Date of Birth</label>
-              <input
-                type="date"
-                value={profile.dateOfBirth}
-                onChange={(e) => handleTextChange('dateOfBirth', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-              />
-            </div>
+              <div>
+                <label className={labelClass}>Registration Date</label>
+                <input
+                  type="date"
+                  value={profile.entryDate || new Date().toISOString().split('T')[0]}
+                  readOnly
+                  className={`${inputClass} bg-slate-100 text-slate-500 cursor-not-allowed border-transparent`}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Qualification</label>
-              <SearchableDropdown
-                value={profile.highestQualification}
-                onChange={(val) => handleTextChange('highestQualification', val)}
-                options={["High School", "Diploma", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]}
-                placeholder="Select or type..."
-              />
-            </div>
+              <div>
+                <label className={labelClass}>Qualification <span className="text-red-500">*</span></label>
+                <SearchableDropdown
+                  value={profile.highestQualification}
+                  onChange={(val) => handleTextChange('highestQualification', val)}
+                  options={["High School", "Diploma", "Bachelor's Degree", "Master's Degree", "PhD", "Other"]}
+                  placeholder="Select education level"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Contact Number</label>
-              <input
-                type="text"
-                value={profile.contactNumber}
-                onChange={(e) => handleTextChange('contactNumber', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="e.g. +1 555-0123"
-              />
-            </div>
+              <div>
+                <label className={labelClass}>Email ID</label>
+                <input
+                  type="email"
+                  value={profile.email}
+                  onChange={(e) => handleTextChange('email', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">WhatsApp Number</label>
-              <input
-                type="text"
-                value={profile.whatsappNumber}
-                onChange={(e) => handleTextChange('whatsappNumber', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="e.g. +1 555-0123"
-              />
-            </div>
+              <div>
+                <label className={labelClass}>Contact Number <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={profile.contactNumber}
+                  onChange={(e) => handleTextChange('contactNumber', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-            <div className="space-y-2 sm:col-span-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email ID</label>
-              <input
-                type="email"
-                value={profile.email}
-                onChange={(e) => handleTextChange('email', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="name@example.com"
-              />
-            </div>
+              <div>
+                <label className={labelClass}>WhatsApp Number</label>
+                <div className="flex items-center space-x-4 mb-2">
+                  <label className="flex items-center space-x-2 cursor-pointer text-xs text-slate-600">
+                    <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500 border-slate-300" />
+                    <span>Same as Primary</span>
+                  </label>
+                </div>
+                <input
+                  type="text"
+                  value={profile.whatsappNumber}
+                  onChange={(e) => handleTextChange('whatsappNumber', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
 
-            <div className="space-y-2 md:col-span-3 xl:col-span-4">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Full Address</label>
-              <textarea
-                value={profile.address}
-                onChange={(e) => handleTextChange('address', e.target.value)}
-                rows={1}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="Street, City, Country"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Professional Details */}
-        <div className="rounded-xl border border-[#f5e4cc] bg-[#fffbf2] shadow-sm p-6 md:p-8">
-          <div className="flex items-center space-x-3 border-b border-[#f5e4cc] pb-5 mb-6">
-            <div className="bg-[#fcead7] p-2.5 rounded-xl text-[#d65d00]"><Briefcase className="w-5 h-5" /></div>
-            <h2 className="text-lg font-bold text-[#d65d00] tracking-tight">Professional Details</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Designation</label>
-              <input
-                type="text"
-                value={profile.designation}
-                onChange={(e) => handleTextChange('designation', e.target.value)}
-                className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
-                placeholder="Current Role"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Industry</label>
-              <SearchableDropdown
-                value={profile.industry}
-                onChange={(val) => handleTextChange('industry', val)}
-                options={["IT / Software", "Healthcare / Medical", "Finance / Banking", "Construction / Real Estate", "Engineering / Manufacturing", "Retail / E-Commerce", "Education", "Other"]}
-                placeholder="Select or type..."
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Exp.</label>
-              <SearchableDropdown
-                value={profile.totalExperience}
-                onChange={(val) => handleTextChange('totalExperience', val)}
-                options={["0 Years (Fresher)", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
-                placeholder="Years"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Indian Exp.</label>
-              <SearchableDropdown
-                value={profile.indianExperience}
-                onChange={(val) => handleTextChange('indianExperience', val)}
-                options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
-                placeholder="Years"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Overseas Exp.</label>
-              <SearchableDropdown
-                value={profile.overseasExperience}
-                onChange={(val) => handleTextChange('overseasExperience', val)}
-                options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
-                placeholder="Years"
-              />
-            </div>
-
-            <div className="space-y-2 md:col-span-3 xl:col-span-5">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Key Skills & Expertise</label>
-              <SearchableDropdown
-                value={profile.keySkills}
-                onChange={(val) => handleTextChange('keySkills', val)}
-                options={["Driver, Truck driver", "React, Node.js, Typescript", "Project Management", "Heavy Machinery Operation", "Customer Service", "Accounting & Finance", "Sales & Marketing", "Other"]}
-                placeholder="e.g. React, Node.js, Project Management"
-              />
+              <div className="sm:col-span-2">
+                <label className={labelClass}>Full Address</label>
+                <textarea
+                  value={profile.address}
+                  onChange={(e) => handleTextChange('address', e.target.value)}
+                  rows={2}
+                  className={inputClass}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Passport & Uploads (Grouped for alignment) */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
-          
-          {/* Passport */}
-          <div className="rounded-xl border border-[#ccedd9] bg-[#f0fbf4] shadow-sm p-6 md:p-8">
-            <div className="flex items-center space-x-3 border-b border-[#ccedd9] pb-5 mb-6">
-              <div className="bg-[#dcf5e6] p-2.5 rounded-xl text-[#118c46]"><Globe className="w-5 h-5" /></div>
-              <h2 className="text-lg font-bold text-[#118c46] tracking-tight">Passport</h2>
+          {/* Professional Details */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <Briefcase className="w-5 h-5 text-slate-600" />
+              <h2 className="text-[16px] font-bold text-slate-800">Work Experience <span className="text-red-500">*</span></h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Passport Number</label>
+            <p className="text-[12px] text-slate-500 mt-1 mb-3">Professional experience and skills</p>
+            <hr className="border-slate-200 mb-6" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5">
+              <div>
+                <label className={labelClass}>Designation <span className="text-red-500">*</span></label>
+                <input
+                  type="text"
+                  value={profile.designation}
+                  onChange={(e) => handleTextChange('designation', e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Industry <span className="text-red-500">*</span></label>
+                <SearchableDropdown
+                  value={profile.industry}
+                  onChange={(val) => handleTextChange('industry', val)}
+                  options={["IT / Software", "Healthcare / Medical", "Finance / Banking", "Construction / Real Estate", "Engineering / Manufacturing", "Retail / E-Commerce", "Education", "Other"]}
+                  placeholder="Select industry"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Total Exp. <span className="text-red-500">*</span></label>
+                <SearchableDropdown
+                  value={profile.totalExperience}
+                  onChange={(val) => handleTextChange('totalExperience', val)}
+                  options={["0 Years (Fresher)", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
+                  placeholder="Select total exp"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Indian Exp.</label>
+                <SearchableDropdown
+                  value={profile.indianExperience}
+                  onChange={(val) => handleTextChange('indianExperience', val)}
+                  options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
+                  placeholder="Select indian exp"
+                />
+              </div>
+
+              <div>
+                <label className={labelClass}>Overseas Exp.</label>
+                <SearchableDropdown
+                  value={profile.overseasExperience}
+                  onChange={(val) => handleTextChange('overseasExperience', val)}
+                  options={["0 Years", "1 Year", "2 Years", "3 Years", "4 Years", "5 Years", "6-10 Years", "10+ Years"]}
+                  placeholder="Select overseas exp"
+                />
+              </div>
+
+              <div className="md:col-span-3">
+                <label className={labelClass}>Key Skills & Expertise <span className="text-red-500">*</span></label>
+                <SearchableDropdown
+                  value={profile.keySkills}
+                  onChange={(val) => handleTextChange('keySkills', val)}
+                  options={["Driver, Truck driver", "React, Node.js, Typescript", "Project Management", "Heavy Machinery Operation", "Customer Service", "Accounting & Finance", "Sales & Marketing", "Other"]}
+                  placeholder="Select or search skill"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Passport & Documents */}
+          <div>
+            <div className="flex items-center space-x-2">
+              <Globe className="w-5 h-5 text-slate-600" />
+              <h2 className="text-[16px] font-bold text-slate-800">Passport & Documents</h2>
+            </div>
+            <p className="text-[12px] text-slate-500 mt-1 mb-3">Travel documents and certifications</p>
+            <hr className="border-slate-200 mb-6" />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-5 mb-8">
+              <div>
+                <label className={labelClass}>Passport Number</label>
                 <input
                   type="text"
                   value={profile.passportNumber}
                   onChange={(e) => handleTextChange('passportNumber', e.target.value)}
-                  className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-mono"
-                  placeholder="e.g. A1234567"
+                  className={inputClass}
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Expiry Date</label>
+              <div>
+                <label className={labelClass}>Passport Expiry Date</label>
                 <input
                   type="date"
                   value={profile.passportExpiryDate}
                   onChange={(e) => handleTextChange('passportExpiryDate', e.target.value)}
-                  className="w-full glass-input rounded-xl py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
+                  className={inputClass}
                 />
               </div>
             </div>
-          </div>
 
-          {/* File Uploads */}
-          <div className="rounded-xl border border-[#cce4ff] bg-[#f0f7ff] shadow-sm p-6 md:p-8">
-            <div className="flex items-center space-x-3 border-b border-[#cce4ff] pb-5 mb-6">
-              <div className="bg-[#ddebff] p-2.5 rounded-xl text-[#0066ff]"><FileText className="w-5 h-5" /></div>
-              <h2 className="text-lg font-bold text-[#0066ff] tracking-tight">Documents</h2>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <FileUpload
                 id="passport"
                 label="Passport Scan"
@@ -381,44 +378,47 @@ export default function CandidateFormPage({
               />
             </div>
           </div>
-        </div>
+        </form>
+      </div>
 
-        {/* Submit Action */}
-        <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 pb-8">
-          {profile.id && (
-            <button
-              type="button"
-              onClick={onPreview}
-              className="w-full sm:w-48 px-6 py-4 bg-white/60 border border-slate-200 text-slate-700 rounded-2xl font-bold text-sm hover:bg-white transition-colors flex items-center justify-center space-x-2 shadow-sm"
-            >
-              <Eye className="w-4 h-4" />
-              <span>Preview</span>
-            </button>
-          )}
-          
+      {/* Action Buttons at the Bottom */}
+      <div className="flex items-center justify-end space-x-4 mt-2 mb-8">
+        {profile.id && (
           <button
             type="button"
-            onClick={handleDirectSubmit}
-            disabled={isSubmitting}
-            className="w-full sm:w-64 px-8 py-4 gradient-btn flex items-center justify-center space-x-2 disabled:opacity-70"
+            onClick={onPreview}
+            className="px-6 py-2.5 border border-slate-300 text-slate-700 rounded-md text-sm font-semibold hover:bg-slate-50 transition-colors flex items-center space-x-2"
           >
-            {isSubmitting ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <Check className="w-4 h-4" />
-                <span>{profile.id ? 'Update Form' : 'Submit Form'}</span>
-              </>
-            )}
+            <Eye className="w-4 h-4" />
+            <span>Preview</span>
           </button>
-        </div>
-      </form>
+        )}
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="px-6 py-2.5 border border-slate-300 text-slate-700 rounded-md text-sm font-semibold hover:bg-slate-50 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={handleDirectSubmit}
+          disabled={isSubmitting}
+          className="px-8 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-bold transition-colors flex items-center shadow-sm disabled:opacity-70"
+        >
+          {isSubmitting ? (
+            <>
+              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>Saving...</span>
+            </>
+          ) : (
+            <span>{profile.id ? 'Save Candidate' : 'Save Candidate'}</span>
+          )}
+        </button>
+      </div>
 
       {/* Document Viewer Modal */}
       {viewingDoc && (

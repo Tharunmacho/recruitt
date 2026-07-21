@@ -15,6 +15,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore (Database) - Strictly connecting to the 'portal' database!
-export const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true
-}, "portal");
+export const db = initializeFirestore(app, {}, "portal");

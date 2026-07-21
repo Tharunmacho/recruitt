@@ -47,13 +47,10 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         className="w-full max-w-md z-10"
         id="login-card-container"
       >
-        <div className="glass-panel p-8 md:p-10 rounded-3xl relative overflow-hidden glow-blue-lg backdrop-blur-3xl bg-white/70">
-          {/* Accent light header band */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500" />
-
+        <div className="bg-white p-8 md:p-10 rounded border border-slate-200 shadow-xl relative overflow-hidden">
           {/* Logo */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center glow-blue mb-5 shadow-lg shadow-blue-500/30">
+            <div className="w-14 h-14 rounded bg-blue-600 flex items-center justify-center mb-5 shadow-sm">
               <Sparkles className="w-7 h-7 text-white" />
             </div>
             <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 font-display">
@@ -97,7 +94,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full glass-input rounded-xl py-3 pl-11 pr-4 text-slate-800 text-sm font-sans"
+                  className="w-full bg-white border border-slate-300 rounded text-sm py-2 pl-11 pr-4 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="name@company.com"
                 />
               </div>
@@ -124,7 +121,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full glass-input rounded-xl py-3 pl-11 pr-11 text-slate-800 text-sm font-sans"
+                  className="w-full bg-white border border-slate-300 rounded text-sm py-2 pl-11 pr-11 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="••••••••"
                 />
                 <button
@@ -157,7 +154,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               type="submit"
               id="login-submit-btn"
               disabled={isLoading}
-              className="w-full py-3.5 px-4 rounded-xl text-white font-medium text-sm tracking-wide transition-all duration-300 gradient-btn flex items-center justify-center space-x-2 cursor-pointer"
+              className="w-full py-2 px-4 rounded bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
             >
               {isLoading ? (
                 <>
@@ -199,7 +196,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-sm glass-panel p-6 rounded-2xl border border-slate-200 text-center"
+            className="w-full max-w-sm bg-white p-6 rounded border border-slate-200 text-center shadow-lg"
           >
             <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-4 border border-blue-100">
               <Lock className="w-5 h-5" />

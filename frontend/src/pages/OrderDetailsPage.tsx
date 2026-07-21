@@ -204,56 +204,55 @@ export default function OrderDetailsPage() {
       </button>
 
       {/* Order Header Card */}
-      <div className="glass-panel p-6 md:p-8 rounded-3xl relative overflow-hidden glow-blue-lg">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500" />
+      <div className="bg-[#f4f7fb] p-6 md:p-8 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
           <div>
             <div className="flex items-center space-x-3 mb-2">
-              <span className="px-2.5 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+              <span className="px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded text-[10px] font-bold uppercase tracking-wider">
                 {order.id}
               </span>
-              <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
-                order.status === 'Open' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                order.status === 'Closed' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                'bg-rose-50 text-rose-600 border-rose-100'
+              <span className={`px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                order.status === 'Open' ? 'bg-amber-100 text-amber-700' :
+                order.status === 'Closed' ? 'bg-emerald-100 text-emerald-700' :
+                'bg-rose-100 text-rose-700'
               }`}>
                 {order.status}
               </span>
               {order.status === 'Open' ? (
                 <button 
                   onClick={handleCloseOrder}
-                  className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider rounded-md hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
+                  className="px-3 py-1 bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
                 >
                   Close Order
                 </button>
               ) : (
                 <button 
                   onClick={handleReopenOrder}
-                  className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider rounded-md hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+                  className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider rounded hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
                 >
                   Reopen Order
                 </button>
               )}
               <button 
                 onClick={openEditModal}
-                className="px-2.5 py-1 bg-slate-50 text-slate-600 text-[10px] font-bold uppercase tracking-wider rounded-md hover:bg-slate-100 hover:text-slate-800 transition-colors shadow-sm cursor-pointer border border-slate-200 flex items-center"
+                className="px-2.5 py-1 bg-white text-slate-700 text-[10px] font-bold uppercase tracking-wider rounded hover:bg-slate-50 transition-colors shadow-sm cursor-pointer border border-slate-200 flex items-center"
               >
                 <Edit2 className="w-3 h-3 mr-1" />
                 Edit
               </button>
               <button 
                 onClick={handleDeleteOrder}
-                className="px-2.5 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wider rounded-md hover:bg-rose-100 hover:text-rose-700 transition-colors shadow-sm cursor-pointer border border-rose-100 flex items-center"
+                className="px-2.5 py-1 bg-rose-50 text-rose-600 text-[10px] font-bold uppercase tracking-wider rounded hover:bg-rose-100 transition-colors shadow-sm cursor-pointer border border-rose-100 flex items-center"
               >
                 <Trash2 className="w-3 h-3 mr-1" />
                 Delete
               </button>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold font-display text-slate-900 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-bold font-display text-[#003366] tracking-tight">
               {order.title}
             </h1>
-            <p className="text-slate-500 text-sm mt-1 flex items-center">
+            <p className="text-[#003366] text-sm mt-1.5 flex items-center font-bold">
               <Briefcase className="w-4 h-4 mr-1.5 text-blue-500" />
               {clientName}
             </p>
@@ -273,40 +272,40 @@ export default function OrderDetailsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-5 p-5 bg-white rounded-xl border border-slate-100 shadow-sm mt-8">
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Required Skills</p>
-            <p className="text-sm font-semibold text-slate-800 line-clamp-1" title={order.requiredSkillset}>{order.requiredSkillset}</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Required Skills</p>
+            <p className="text-sm font-bold text-[#003366] line-clamp-1" title={order.requiredSkillset}>{order.requiredSkillset}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Industry</p>
-            <p className="text-sm font-semibold text-slate-800 line-clamp-1" title={order.requiredIndustry}>{order.requiredIndustry || 'Any'}</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Industry</p>
+            <p className="text-sm font-bold text-[#003366] line-clamp-1" title={order.requiredIndustry}>{order.requiredIndustry || 'Any'}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Designation</p>
-            <p className="text-sm font-semibold text-slate-800 line-clamp-1" title={order.requiredDesignation}>{order.requiredDesignation || 'Any'}</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Designation</p>
+            <p className="text-sm font-bold text-[#003366] line-clamp-1" title={order.requiredDesignation}>{order.requiredDesignation || 'Any'}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Min. Exp.</p>
-            <p className="text-sm font-semibold text-slate-800">{order.requiredExperience ? `${order.requiredExperience} yrs` : 'Any'}</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Min. Exp.</p>
+            <p className="text-sm font-bold text-[#003366]">{order.requiredExperience ? `${order.requiredExperience} yrs` : 'Any'}</p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Expected Salary</p>
-            <p className="text-sm font-semibold text-slate-800 flex items-center">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Expected Salary</p>
+            <p className="text-sm font-bold text-[#003366] flex items-center">
               <IndianRupee className="w-3.5 h-3.5 mr-1 text-slate-400" />
               {order.expectedSalary}
             </p>
           </div>
           <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Due Date</p>
-            <p className="text-sm font-semibold text-rose-600 flex items-center">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Due Date</p>
+            <p className="text-sm font-bold text-rose-600 flex items-center">
               <Calendar className="w-3.5 h-3.5 mr-1" />
               {new Date(order.dueDate).toLocaleDateString()}
             </p>
           </div>
-          <div>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Remarks</p>
-            <p className="text-sm font-semibold text-slate-600 line-clamp-1" title={order.remarks}>{order.remarks || 'None'}</p>
+          <div className="md:col-span-4">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5">Remarks</p>
+            <p className="text-sm font-bold text-slate-600 line-clamp-1" title={order.remarks}>{order.remarks || 'None'}</p>
           </div>
         </div>
       </div>
@@ -332,28 +331,27 @@ export default function OrderDetailsPage() {
                   key={candidate.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="glass-panel p-4 md:p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-blue-300 transition-colors relative overflow-hidden"
+                  className="bg-[#f4f7fb] p-4 md:p-5 rounded-xl border border-blue-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 group hover:border-blue-300 transition-colors"
                 >
-                  <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 to-indigo-500 opacity-50" />
-                  <div className="flex items-center space-x-4 flex-1 overflow-hidden ml-2">
-                    <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg border border-indigo-100 shrink-0">
+                  <div className="flex items-center space-x-4 flex-1 overflow-hidden">
+                    <div className="w-12 h-12 rounded-full bg-white text-indigo-600 flex items-center justify-center font-bold text-lg shadow-sm shrink-0">
                       {candidate.candidateName.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2">
-                        <h3 className="text-base font-bold text-slate-800 truncate">{candidate.candidateName}</h3>
-                        <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{score} matches</span>
+                        <h3 className="text-base font-bold text-[#003366] truncate">{candidate.candidateName}</h3>
+                        <span className="text-[10px] font-bold bg-white text-blue-600 px-2.5 py-1 rounded shadow-sm">{score} matches</span>
                       </div>
-                      <p className="text-xs text-slate-500 truncate mt-0.5">
-                        {candidate.designation || 'No Role'} • {candidate.highestQualification} • {candidate.totalExperience || '0'} exp
+                      <p className="text-xs text-slate-600 truncate mt-1">
+                        <span className="font-bold">{candidate.designation || 'No Role'}</span> • {candidate.highestQualification} • {candidate.totalExperience || '0'} exp
                       </p>
                       
                       {/* Match Tags */}
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {matchData.skill && <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-blue-100">✓ Skills</span>}
-                        {matchData.industry && <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-indigo-100">✓ Industry</span>}
-                        {matchData.designation && <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-purple-100">✓ Role</span>}
-                        {matchData.experience && <span className="px-2 py-0.5 bg-cyan-50 text-cyan-600 text-[10px] font-bold uppercase tracking-wider rounded-md border border-cyan-100">✓ Exp</span>}
+                      <div className="flex flex-wrap gap-2 mt-2.5">
+                        {matchData.skill && <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded">✓ Skills</span>}
+                        {matchData.industry && <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider rounded">✓ Industry</span>}
+                        {matchData.designation && <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-[10px] font-bold uppercase tracking-wider rounded">✓ Role</span>}
+                        {matchData.experience && <span className="px-2 py-0.5 bg-cyan-100 text-cyan-700 text-[10px] font-bold uppercase tracking-wider rounded">✓ Exp</span>}
                       </div>
                     </div>
                   </div>
@@ -407,97 +405,97 @@ export default function OrderDetailsPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-xl premium-modal p-8 rounded-3xl"
+            className="w-full max-w-xl bg-white p-8 rounded"
           >
-            <h3 className="text-2xl font-bold text-slate-900 font-display mb-6">Edit Job Order</h3>
+            <h3 className="text-xl font-bold text-slate-800 tracking-tight mb-6">Edit Job Order</h3>
             
             <div className="space-y-5">
               <div>
-                <label className="premium-label">Job Title</label>
+                <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Job Title</label>
                 <input 
                   type="text" 
                   value={editFormData.title}
                   onChange={(e) => setEditFormData({...editFormData, title: e.target.value})}
-                  className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                  className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                 />
               </div>
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="premium-label">Headcount</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Headcount</label>
                   <input 
                     type="number" 
                     value={editFormData.headcount}
                     onChange={(e) => setEditFormData({...editFormData, headcount: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
                 <div>
-                  <label className="premium-label">Due Date</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Due Date</label>
                   <input 
                     type="date" 
                     value={editFormData.dueDate ? editFormData.dueDate.split('T')[0] : ''}
                     onChange={(e) => setEditFormData({...editFormData, dueDate: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="premium-label">Required Industry</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Required Industry</label>
                   <input 
                     type="text" 
                     value={editFormData.requiredIndustry}
                     onChange={(e) => setEditFormData({...editFormData, requiredIndustry: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
                 <div>
-                  <label className="premium-label">Required Designation</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Required Designation</label>
                   <input 
                     type="text" 
                     value={editFormData.requiredDesignation}
                     onChange={(e) => setEditFormData({...editFormData, requiredDesignation: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="premium-label">Min. Experience (Years)</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Min. Experience (Years)</label>
                   <input 
                     type="number" 
                     value={editFormData.requiredExperience}
                     onChange={(e) => setEditFormData({...editFormData, requiredExperience: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
                 <div>
-                  <label className="premium-label">Expected Salary</label>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Expected Salary</label>
                   <input 
                     type="text" 
                     value={editFormData.expectedSalary}
                     onChange={(e) => setEditFormData({...editFormData, expectedSalary: e.target.value})}
-                    className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                    className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                   />
                 </div>
               </div>
               <div>
-                <label className="premium-label">Required Skills</label>
+                <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Required Skills</label>
                 <input 
                   type="text" 
                   value={editFormData.requiredSkillset}
                   onChange={(e) => setEditFormData({...editFormData, requiredSkillset: e.target.value})}
-                  className="w-full premium-input py-3 px-4 text-sm font-medium" 
+                  className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                 />
               </div>
               <div>
-                <label className="premium-label">Remarks</label>
+                <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Remarks</label>
                 <textarea 
                   value={editFormData.remarks}
                   onChange={(e) => setEditFormData({...editFormData, remarks: e.target.value})}
-                  className="w-full premium-input py-3 px-4 text-sm font-medium h-24 resize-none" 
+                  className="w-full bg-white border border-slate-300 rounded text-sm py-2 px-3 text-slate-800 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors h-24 resize-none" 
                 ></textarea>
               </div>
             </div>
@@ -505,13 +503,13 @@ export default function OrderDetailsPage() {
             <div className="mt-8 flex justify-end space-x-3">
               <button 
                 onClick={() => setIsEditModalOpen(false)}
-                className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-xl transition-colors cursor-pointer"
+                className="px-6 py-2 border border-slate-300 text-slate-700 rounded text-sm font-semibold hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleSaveEdit}
-                className="px-6 py-2.5 gradient-btn text-white text-sm font-bold rounded-xl cursor-pointer shadow-lg shadow-blue-500/30 flex items-center"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-bold transition-colors cursor-pointer flex items-center shadow-sm"
               >
                 Update
               </button>

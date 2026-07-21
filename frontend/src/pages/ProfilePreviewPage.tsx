@@ -159,10 +159,8 @@ export default function ProfilePreviewPage({
         </div>
       </div>
 
-      <div className="glass-panel rounded-3xl overflow-hidden shadow-sm relative border border-slate-250 bg-white print:border-none print:shadow-none print:bg-transparent">
+      <div className="bg-white rounded border border-slate-200 shadow-sm overflow-hidden print:border-none print:shadow-none print:bg-transparent">
         
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-indigo-600 print:hidden" />
-
         <div className="p-6 md:p-8 border-b border-slate-200 bg-slate-50/60 grid grid-cols-1 md:grid-cols-4 gap-6 items-center print:bg-transparent print:border-b print:p-2">
           <div className="md:col-span-3 text-center md:text-left space-y-2">
             <div className="space-y-0.5">
@@ -283,11 +281,11 @@ export default function ProfilePreviewPage({
       </div>
 
       {showSubmitModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
           <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md glass-panel p-8 rounded-3xl border border-slate-200 text-center space-y-5"
+            className="w-full max-w-md bg-white p-8 rounded border border-slate-200 text-center space-y-5 shadow-lg"
           >
             <div className="w-14 h-14 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto border border-emerald-200">
               <Check className="w-7 h-7" />

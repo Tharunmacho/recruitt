@@ -36,8 +36,9 @@ export default function SearchableDropdown({
 
   // Remove duplicates from options if any, and filter based on search
   const uniqueOptions = Array.from(new Set(options));
+  const exactMatch = uniqueOptions.some(opt => opt.toLowerCase() === search.toLowerCase());
   const filteredOptions = uniqueOptions.filter(opt => 
-    opt.toLowerCase().includes(search.toLowerCase())
+    exactMatch ? true : opt.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -50,8 +51,8 @@ export default function SearchableDropdown({
           onChange(e.target.value);
           setIsOpen(true);
         }}
-        onFocus={() => setIsOpen(true)}
-        className={`w-full glass-input py-3 pl-4 pr-10 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold ${className}`}
+        onFocus={(e) => { setIsOpen(true); e.target.select(); }}
+        className={`w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 pl-3 pr-10 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none ${className}`}
         placeholder={placeholder}
       />
       <div 

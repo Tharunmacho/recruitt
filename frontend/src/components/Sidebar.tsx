@@ -6,6 +6,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  ChevronRight,
   Menu,
   Sparkles,
   ShieldAlert,
@@ -64,23 +65,17 @@ export default function Sidebar({
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white border-r border-slate-200 shadow-sm">
       {/* Brand Header */}
-      <div className="flex items-center justify-between p-5 border-b border-slate-200/50 h-20 shrink-0 bg-white/50 backdrop-blur-md">
-        <div className="flex items-center space-x-3 overflow-hidden">
-          <div className="w-8 h-8 flex items-center justify-center shrink-0 text-[#0047ba]">
-            <Sparkles className="w-8 h-8" />
-          </div>
+      <div className="flex items-center justify-between p-5 border-b-[3px] border-blue-600 h-16 shrink-0 bg-white">
+        <div className="flex items-center overflow-hidden px-1">
           {(!isCollapsed || isOpen) && (
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className="text-left"
             >
-              <h1 className="text-sm font-bold tracking-tight text-slate-900 font-display leading-none">
-                NexHire
-              </h1>
-              <span className="text-[10px] text-slate-500 font-bold tracking-widest uppercase font-mono">
+              <h1 className="text-[16px] font-extrabold text-slate-900 tracking-tight font-display">
                 Internal Portal
-              </span>
+              </h1>
             </motion.div>
           )}
         </div>
@@ -97,9 +92,9 @@ export default function Sidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto bg-white">
+      <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto bg-white">
         {(!isCollapsed || isOpen) && (
-          <div className="px-3 mb-4 mt-2 text-xs font-bold text-slate-500 uppercase tracking-widest">
+          <div className="px-3 mb-3 mt-2 text-[15px] font-semibold text-[#4a6b8c]">
             Navigation
           </div>
         )}
@@ -110,32 +105,36 @@ export default function Sidebar({
             <button
               key={item.id}
               onClick={() => handleNavClick(item.id)}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer group ${isActive
-                ? 'bg-[#0047ba] text-white font-bold shadow-md shadow-[#0047ba]/20'
-                : 'text-slate-600 hover:text-[#0047ba] hover:bg-[#f0f7ff] font-semibold'
-                }`}
+              className={`w-full flex items-center justify-between pr-3 pl-4 py-3 mb-1 transition-all duration-200 cursor-pointer group ${
+                isActive
+                  ? 'bg-[#f4f7fb] text-[#003366] font-semibold border-l-[4px] border-[#003366] rounded-r-xl'
+                  : 'text-[#003366] hover:bg-[#f4f7fb]/50 font-medium border-l-[4px] border-transparent rounded-r-xl'
+              }`}
             >
               <div className="flex items-center space-x-3">
-                <Icon className={`w-5 h-5 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-[#0047ba]'}`} />
+                <Icon className="w-[18px] h-[18px] shrink-0 text-[#003366]" strokeWidth={2} />
                 {(!isCollapsed || isOpen) && (
-                  <span className="text-sm tracking-wide">{item.label}</span>
+                  <span className="text-[15px] tracking-wide">{item.label}</span>
                 )}
               </div>
+              {(!isCollapsed || isOpen) && (
+                <ChevronRight className="w-4 h-4 text-[#003366]" />
+              )}
             </button>
           );
         })}
       </nav>
 
       {/* Logout button at bottom */}
-      <div className="p-4 border-t border-slate-200 shrink-0 bg-white">
+      <div className="p-3 border-t border-slate-200 shrink-0 bg-white">
         <button
           onClick={onLogout}
-          className={`w-full flex items-center px-4 py-3 rounded-xl text-slate-600 font-semibold hover:text-rose-600 hover:bg-rose-50 transition-all duration-200 cursor-pointer group ${isCollapsed && !isOpen ? 'justify-center' : 'justify-start space-x-3'
+          className={`w-full flex items-center px-3 py-3 rounded-xl text-[#003366] font-semibold hover:bg-rose-50 hover:text-rose-600 transition-all duration-200 cursor-pointer group ${isCollapsed && !isOpen ? 'justify-center' : 'justify-start space-x-4'
             }`}
         >
-          <LogOut className="w-5 h-5 text-slate-400 group-hover:text-rose-500 transition-colors" />
+          <LogOut className="w-[18px] h-[18px] text-[#003366] group-hover:text-rose-500 transition-colors" strokeWidth={2} />
           {(!isCollapsed || isOpen) && (
-            <span className="text-sm tracking-wide">Log out</span>
+            <span className="text-[15px] tracking-wide">Logout</span>
           )}
         </button>
       </div>

@@ -108,11 +108,12 @@ export default function CandidatesTablePage({
         </div>
       </div>
 
-      <div className="bg-white border border-[#cce4ff] rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-blue-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left border-collapse">
-            <thead className="bg-[#f0f7ff] text-[#0047ba] border-b border-[#cce4ff] text-xs font-bold uppercase tracking-wider">
+            <thead className="bg-blue-50/50 text-slate-700 border-b border-blue-200 text-xs font-bold uppercase tracking-wider">
               <tr>
+                <th className="px-4 py-4 text-center w-16">S.No.</th>
                 <th className="px-4 py-4 text-center">Name</th>
                 <th className="px-4 py-4 text-center">Designation</th>
                 <th className="px-4 py-4 text-center">Industry</th>
@@ -124,10 +125,13 @@ export default function CandidatesTablePage({
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredCandidates.map((candidate, idx) => (
-                <tr key={candidate.id || idx} className="group bg-white border-b border-[#e5f0ff] last:border-0 hover:bg-[#f0f7ff] transition-all duration-300 relative hover:z-10 hover:shadow-xl hover:shadow-[#cce4ff]">
+                <tr key={candidate.id || idx} className="group bg-white border-b border-blue-100 last:border-0 hover:bg-blue-50/50 transition-colors">
+                  <td className="px-4 py-4 text-center font-bold text-slate-800">
+                    {idx + 1}
+                  </td>
                   <td className="px-4 py-4 text-center">
                     <div className="flex flex-col items-center">
-                      <span className="font-bold text-[#0047ba] capitalize">{candidate.candidateName || 'N/A'}</span>
+                      <span className="font-bold text-slate-800 capitalize">{candidate.candidateName || 'N/A'}</span>
                       <span className="text-slate-500 text-xs">{candidate.dateOfBirth || '-'}</span>
                     </div>
                   </td>
@@ -182,7 +186,7 @@ export default function CandidatesTablePage({
               ))}
               {filteredCandidates.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-slate-500">
+                  <td colSpan={8} className="px-4 py-12 text-center text-slate-500">
                     No candidates found.
                   </td>
                 </tr>

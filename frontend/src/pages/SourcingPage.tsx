@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail, X, Building, Contact } from 'lucide-react';
+import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail, X, Building, Contact, Calendar, Trash2 } from 'lucide-react';
 import { Client, ClientType } from '../types';
-import { saveClientToDb, getClientsFromDb } from '../services/db';
+import { saveClientToDb, getClientsFromDb, deleteClientFromDb } from '../services/db';
 import SearchableDropdown from '../components/SearchableDropdown';
 
 export default function SourcingPage() {
@@ -22,6 +22,14 @@ export default function SourcingPage() {
       setIsLoading(false);
     };
     fetchClients();
+  }, []);
+
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => setActiveMenuId(null);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
   
   // Form State
@@ -59,6 +67,18 @@ export default function SourcingPage() {
     }
   };
 
+  const handleDeleteClient = async (id: string, type: ClientType) => {
+    if (window.confirm(`Are you sure you want to permanently delete this ${type.toLowerCase()}?`)) {
+      try {
+        await deleteClientFromDb(id, type);
+        setClients(clients.filter(c => c.id !== id));
+        setActiveMenuId(null);
+      } catch (error) {
+        alert("Failed to delete client. Please try again.");
+      }
+    }
+  };
+
   const filteredClients = clients.filter(
     (c) => c.type === activeTab && c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -77,7 +97,7 @@ export default function SourcingPage() {
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center space-x-2 gradient-btn text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/30 cursor-pointer"
+          className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors shadow-sm cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>New Client</span>
@@ -85,7 +105,7 @@ export default function SourcingPage() {
       </div>
 
       {/* Tabs & Search */}
-      <div className="bg-[#f0f7ff] border border-[#cce4ff] p-2 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 shadow-sm p-2 rounded flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex p-1 bg-white/50 rounded-xl w-full md:w-auto">
           <button
             onClick={() => setActiveTab('Association')}
@@ -118,7 +138,7 @@ export default function SourcingPage() {
             placeholder={`Search ${activeTab.toLowerCase()}s...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 glass-input rounded-xl text-sm"
+            className="w-full pl-9 pr-4 py-2.5 bg-[#f4f7fb] border border-slate-200 rounded text-sm text-slate-800 focus:bg-white focus:outline-none focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200"
           />
         </div>
       </div>
@@ -136,16 +156,15 @@ export default function SourcingPage() {
               key={client.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -5, scale: 1.01 }}
+              whileHover={{ y: -4, scale: 1.01 }}
               transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl flex flex-col justify-between group transition-all shadow-sm hover:shadow-lg border border-slate-200 overflow-hidden cursor-pointer hover:border-slate-300"
+              className="bg-[#f4f7fb] rounded-xl flex flex-col justify-between group transition-all duration-300 shadow-sm hover:shadow-md border border-blue-100 overflow-hidden cursor-pointer hover:border-blue-300 p-5"
             >
-              <div className={`h-1.5 w-full ${client.type === 'Association' ? 'bg-[#8a4bbb]' : 'bg-[#d65d00]'}`} />
-              <div className="p-6 flex flex-col h-full justify-between">
+              <div className="flex flex-col h-full justify-between">
                 <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                      client.type === 'Association' ? 'bg-[#f3e8fc] text-[#8a4bbb]' : 'bg-[#fcead7] text-[#d65d00]'
+                  <div className="flex justify-between items-start">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                      client.type === 'Association' ? 'bg-indigo-100 text-indigo-600' : 'bg-emerald-100 text-emerald-600'
                     }`}>
                       {client.type === 'Association' ? (
                         <Building2 className="w-5 h-5" />
@@ -153,35 +172,72 @@ export default function SourcingPage() {
                         <Briefcase className="w-5 h-5" />
                       )}
                     </div>
-                    <button className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors">
-                      <MoreVertical className="w-4 h-4" />
-                    </button>
+                    <div className="relative">
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setActiveMenuId(activeMenuId === client.id ? null : client.id); }}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-white/50 transition-colors cursor-pointer"
+                      >
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                      
+                      {activeMenuId === client.id && (
+                        <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-slate-100 py-1 z-10 animate-in fade-in zoom-in-95">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClient(client.id, client.type);
+                            }}
+                            className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center cursor-pointer font-medium"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-slate-900 line-clamp-1 mb-2">{client.name}</h3>
-                  <div className="inline-block px-2.5 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded-md mb-5 border border-emerald-200">
+                  <h3 className="text-lg font-bold text-[#003366] line-clamp-1 mt-4 mb-2">{client.name}</h3>
+                  <div className="inline-block px-2.5 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase tracking-wider rounded w-max mb-5">
                     {client.status}
                   </div>
 
-                  <div className="space-y-2 text-sm text-slate-600">
-                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
-                      <User className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span className="font-semibold text-slate-700 truncate">{client.contactPerson}</span>
+                  <div className="grid grid-cols-2 gap-3 my-5">
+                    <div className="flex flex-col p-3 rounded-lg bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center space-x-2 mb-1.5">
+                        <User className="w-4 h-4 text-blue-500" />
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Contact</p>
+                      </div>
+                      <p className="text-sm font-bold text-slate-800 truncate">{client.contactPerson}</p>
                     </div>
-                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
-                      <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span className="font-semibold text-slate-700 truncate">{client.phone}</span>
+                    <div className="flex flex-col p-3 rounded-lg bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center space-x-2 mb-1.5">
+                        <Phone className="w-4 h-4 text-emerald-500" />
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Phone</p>
+                      </div>
+                      <p className="text-sm font-bold text-slate-800 truncate">{client.phone}</p>
                     </div>
-                    <div className="flex items-center space-x-3 p-2.5 rounded-lg bg-slate-50 border border-slate-100 group-hover:bg-slate-100/50 transition-colors">
-                      <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span className="font-semibold text-slate-700 truncate">{client.email}</span>
+                  </div>
+
+                  <div className="mb-4 flex-1">
+                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-white border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-center shrink-0 w-8 h-8 rounded-lg bg-blue-50">
+                        <Mail className="w-4 h-4 text-blue-500" />
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Email Address</p>
+                        <p className="text-sm font-bold text-slate-800 truncate">{client.email}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-mono text-slate-400">
+                <div className="mt-5 pt-4 flex items-center justify-between text-xs font-mono text-slate-400">
                   <span>ID: {client.id}</span>
-                  <span>{new Date(client.createdAt).toLocaleDateString()}</span>
+                  <div className="flex items-center text-blue-600 font-bold">
+                    <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                    {new Date(client.createdAt).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -200,7 +256,7 @@ export default function SourcingPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl my-auto overflow-hidden flex flex-col"
+            className="w-full max-w-3xl bg-white rounded border border-slate-200 shadow-lg my-auto overflow-hidden flex flex-col"
             style={{ maxHeight: 'calc(100vh - 2rem)' }}
           >
             {/* Header Sticky */}
@@ -218,9 +274,9 @@ export default function SourcingPage() {
             </div>
             
             <div className="p-8 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 12rem)' }}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Client Type</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5">
+                <div>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Client Type</label>
                   <SearchableDropdown
                     value={formClientType}
                     onChange={(val) => setFormClientType(val as ClientType)}
@@ -229,21 +285,21 @@ export default function SourcingPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{formClientType === 'Association' ? 'Association Name' : 'Company Name'}</label>
+                <div>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">{formClientType === 'Association' ? 'Association Name' : 'Company Name'}</label>
                   <input 
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" 
+                    className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" 
                     placeholder={`e.g. Apex ${formClientType === 'Association' ? 'Association' : 'Inc.'}`} 
                   />
                 </div>
 
                 {formClientType === 'Business' && (
                   <>
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Industry / Sector</label>
+                    <div>
+                      <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Industry / Sector</label>
                       <SearchableDropdown
                         value=""
                         onChange={() => {}}
@@ -251,59 +307,59 @@ export default function SourcingPage() {
                         placeholder="e.g. IT Services"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Company Registration No.</label>
-                      <input type="text" className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" placeholder="e.g. CRN-12345" />
+                    <div>
+                      <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Company Registration No.</label>
+                      <input type="text" className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" placeholder="e.g. CRN-12345" />
                     </div>
                   </>
                 )}
 
                 {formClientType === 'Association' && (
-                  <div className="space-y-2 sm:col-span-2">
-                    <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Non-Profit Registration No.</label>
-                    <input type="text" className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-[#8a4bbb]/20 focus:border-[#8a4bbb]/30 transition-all font-semibold" placeholder="e.g. NP-98765" />
+                  <div className="sm:col-span-2">
+                    <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Non-Profit Registration No.</label>
+                    <input type="text" className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" placeholder="e.g. NP-98765" />
                   </div>
                 )}
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{formClientType === 'Association' ? 'President / Chairman' : 'HR Contact Person'}</label>
+                <div>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">{formClientType === 'Association' ? 'President / Chairman' : 'HR Contact Person'}</label>
                   <input 
                     type="text" 
                     value={formData.contactPerson}
                     onChange={(e) => setFormData({...formData, contactPerson: e.target.value})}
-                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
+                    className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" 
                     placeholder="e.g. Jane Doe" 
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Phone Number</label>
+                <div>
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Phone Number</label>
                   <input 
                     type="text" 
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
+                    className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" 
                     placeholder="e.g. +1 555-0199" 
                   />
                 </div>
 
-                <div className="space-y-2 sm:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Email Address</label>
                   <input 
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold" 
+                    className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none" 
                     placeholder="e.g. contact@company.com" 
                   />
                 </div>
 
-                <div className="space-y-2 sm:col-span-2">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Head Office Address</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-[12px] font-semibold text-slate-700 mb-1.5">Head Office Address</label>
                   <textarea 
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    className="w-full glass-input py-3 px-4 text-slate-800 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all font-semibold h-24 resize-none" 
+                    className="w-full bg-[#f4f7fb] border border-slate-200 rounded text-sm py-2.5 px-3 text-slate-800 focus:bg-white focus:ring-[3px] focus:ring-blue-500/15 focus:border-blue-400 transition-all duration-200 outline-none h-24 resize-none" 
                     placeholder="123 Corporate Blvd..."
                   ></textarea>
                 </div>
@@ -311,17 +367,17 @@ export default function SourcingPage() {
             </div>
 
             {/* Footer Sticky */}
-            <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 flex justify-end space-x-4 sticky bottom-0">
+            <div className="px-8 py-5 flex justify-end space-x-4">
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="px-6 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl transition-colors cursor-pointer shadow-sm"
+                className="px-6 py-2 border border-slate-300 text-slate-700 rounded text-sm font-semibold hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button 
                 onClick={handleCreateClient}
                 disabled={isSaving}
-                className="px-8 py-2.5 gradient-btn text-white text-sm font-bold rounded-xl cursor-pointer shadow-lg shadow-blue-500/30 disabled:opacity-50 flex items-center"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-bold transition-colors cursor-pointer flex items-center shadow-sm disabled:opacity-70"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                 {isSaving ? 'Creating...' : 'Create Client'}

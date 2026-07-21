@@ -441,6 +441,21 @@ export const getClientsFromDb = async (): Promise<any[]> => {
 };
 
 /**
+ * Permanently deletes a Client (Association or Business) from Firestore
+ */
+export const deleteClientFromDb = async (clientId: string, type: 'Association' | 'Business'): Promise<void> => {
+  try {
+    const { deleteDoc } = await import('firebase/firestore');
+    const collectionName = type === 'Association' ? ASSOC_COLLECTION : BUS_COLLECTION;
+    const docRef = doc(db, collectionName, clientId);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error("Error deleting client: ", error);
+    throw error;
+  }
+};
+
+/**
  * Saves a new Job Order to Firestore with a custom ID
  */
 export const saveOrderToDb = async (orderData: any): Promise<any> => {

@@ -18,7 +18,8 @@ import {
   UserCheck,
   Smartphone,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  PanelLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -317,7 +318,7 @@ export default function App() {
           <div className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-slate-50">
 
             {/* Top Toolbar Navigation Header - Print Hidden */}
-            <header className="sticky top-0 z-20 h-16 shrink-0 border-b-[3px] border-[#0047ba] bg-white flex items-center justify-between px-6 print:hidden shadow-sm">
+            <header className="sticky top-0 z-20 h-16 shrink-0 border-b-[3px] border-blue-600 bg-white flex items-center justify-between px-6 print:hidden shadow-sm">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setIsMobileSidebarOpen(true)}
@@ -327,7 +328,7 @@ export default function App() {
                   <Menu className="w-5 h-5" />
                 </button>
                 <div className="flex items-center text-slate-800 space-x-2">
-                  <div className="w-4 h-4 border-2 border-slate-400 rounded-sm" /> {/* Decorative icon like reference */}
+                  <PanelLeft className="w-5 h-5 text-slate-800" strokeWidth={2.5} />
                   <h2 className="text-lg font-bold capitalize">
                     {location.pathname === '/' ? 'Dashboard' : location.pathname.substring(1).replace('-', ' ')}
                   </h2>
@@ -342,12 +343,12 @@ export default function App() {
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="flex items-center space-x-3 cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-full bg-[#0047ba] text-white flex items-center justify-center font-bold text-xs uppercase">
+                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs uppercase">
                       {user.email ? user.email.charAt(0) : 'U'}
                     </div>
                     <div className="hidden sm:flex flex-col text-right">
                       <span className="text-sm font-bold text-slate-800 flex items-center justify-end space-x-2 capitalize">
-                        {user.email ? user.email.split('@')[0] : 'User'} <span className="ml-2 px-1.5 py-0.5 bg-[#0047ba] text-white text-[10px] rounded-md">Admin</span>
+                        {user.email ? user.email.split('@')[0] : 'User'} <span className="ml-2 px-1.5 py-0.5 bg-blue-600 text-white text-[10px] rounded-md">Admin</span>
                       </span>
                       <span className="text-xs text-slate-500">{user.email || 'user@company.com'}</span>
                     </div>
