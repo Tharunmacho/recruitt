@@ -5,14 +5,14 @@ import {
   Bell,
   Settings,
   LogOut,
-  ChevronLeft,
   ChevronRight,
   Menu,
   Sparkles,
   ShieldAlert,
   Users,
   Network,
-  ClipboardList
+  ClipboardList,
+  PanelLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
@@ -86,7 +86,7 @@ export default function Sidebar({
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="hidden md:flex p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
           >
-            <ChevronLeft className={`w-4 h-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+            <PanelLeft strokeWidth={2.5} className="w-5 h-5 transition-transform duration-300 text-slate-600" />
           </button>
         )}
       </div>

@@ -327,10 +327,9 @@ export default function App() {
                 >
                   <Menu className="w-5 h-5" />
                 </button>
-                <div className="flex items-center text-slate-800 space-x-2">
-                  <PanelLeft className="w-5 h-5 text-slate-800" strokeWidth={2.5} />
-                  <h2 className="text-lg font-bold capitalize">
-                    {location.pathname === '/' ? 'Dashboard' : location.pathname.substring(1).replace('-', ' ')}
+                <div className="flex items-center space-x-2">
+                  <h2 className="text-xl font-extrabold text-slate-950 tracking-tight capitalize">
+                    Dashboard
                   </h2>
                 </div>
               </div>

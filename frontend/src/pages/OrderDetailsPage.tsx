@@ -195,13 +195,15 @@ export default function OrderDetailsPage() {
     <div className="space-y-6">
       
       {/* Top bar */}
-      <button 
-        onClick={() => navigate('/orders')}
-        className="flex items-center text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" />
-        Back to Orders
-      </button>
+      <div className="mb-4">
+        <button 
+          onClick={() => navigate('/orders')}
+          className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
+          title="Back to Orders"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      </div>
 
       {/* Order Header Card */}
       <div className="bg-[#f4f7fb] p-6 md:p-8 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden">
