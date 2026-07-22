@@ -175,7 +175,7 @@ export default function CandidateFormPage({
               <div>
                 <label className={labelClass}>Registration Date</label>
                 <input
-                  type="date"
+                  type="text"
                   value={profile.entryDate || new Date().toISOString().split('T')[0]}
                   readOnly
                   className={`${inputClass} bg-slate-100 text-slate-500 cursor-not-allowed border-transparent`}
