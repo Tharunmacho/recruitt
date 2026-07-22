@@ -8,6 +8,7 @@ import {
   Globe,
   ArrowLeft
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   CandidateProfile, 
@@ -30,6 +31,7 @@ export default function CandidateFormPage({
   onSaveDraft,
   onPreview
 }: CandidateFormPageProps) {
+  const navigate = useNavigate();
   const [notification, setNotification] = useState<string | null>(null);
   const [viewingDoc, setViewingDoc] = useState<DocumentUpload | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,7 +122,7 @@ export default function CandidateFormPage({
         <div className="flex items-center space-x-4">
           <button 
             type="button"
-            onClick={() => window.history.back()} 
+            onClick={() => navigate('/dashboard')} 
             className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
             title="Go Back"
           >
@@ -396,7 +398,7 @@ export default function CandidateFormPage({
         )}
         <button
           type="button"
-          onClick={() => window.history.back()}
+          onClick={() => navigate('/dashboard')}
           className="px-6 py-2.5 border border-slate-300 text-slate-700 rounded-md text-sm font-semibold hover:bg-slate-50 transition-colors"
         >
           Cancel

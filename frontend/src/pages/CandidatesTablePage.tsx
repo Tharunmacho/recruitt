@@ -10,6 +10,7 @@ import {
   Trash2,
   ArrowLeft
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { CandidateProfile } from '../types';
 import CandidateLogsModal from '../components/CandidateLogsModal';
 
@@ -26,6 +27,7 @@ export default function CandidatesTablePage({
   onView,
   onDelete
 }: CandidatesTablePageProps) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedLogsCandidate, setSelectedLogsCandidate] = useState<{id: string, name: string} | null>(null);
@@ -72,9 +74,9 @@ export default function CandidatesTablePage({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/dashboard')}
             className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
-            title="Go Back"
+            title="Go to Dashboard"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>

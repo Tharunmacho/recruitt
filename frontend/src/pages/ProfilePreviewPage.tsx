@@ -99,9 +99,9 @@ export default function ProfilePreviewPage({
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 print:hidden">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
             className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
-            title="Return to Dashboard"
+            title="Go Back"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>

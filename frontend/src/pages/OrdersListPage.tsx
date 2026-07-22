@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ClipboardList, Plus, Search, Calendar, IndianRupee, Users, Briefcase, Loader2, ChevronDown, Building, X, Target } from 'lucide-react';
+import { ClipboardList, Plus, Search, Calendar, IndianRupee, Users, Briefcase, Loader2, ChevronDown, Building, X, Target, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Order, Client } from '../types';
 import { saveOrderToDb, getOrdersFromDb, getClientsFromDb } from '../services/db';
@@ -87,13 +87,23 @@ export default function OrdersListPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-            Job Orders
-          </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Manage open requisitions and client demands
-          </p>
+        <div className="flex items-center space-x-4">
+          <button 
+            type="button"
+            onClick={() => navigate('/dashboard')} 
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
+            title="Go to Dashboard"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
+              Job Orders
+            </h1>
+            <p className="text-slate-500 text-xs mt-1">
+              Manage your open positions and client requirements.
+            </p>
+          </div>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}

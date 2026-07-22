@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail, X, Building, Contact, Calendar, Trash2 } from 'lucide-react';
+import { Building2, Briefcase, Plus, Search, MoreVertical, Loader2, Users, User, Phone, Mail, X, Building, Contact, Calendar, Trash2, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Client, ClientType } from '../types';
 import { saveClientToDb, getClientsFromDb, deleteClientFromDb } from '../services/db';
 import SearchableDropdown from '../components/SearchableDropdown';
 
 export default function SourcingPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<ClientType>('Association');
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -87,13 +89,23 @@ export default function SourcingPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
-            Sourcing Hub
-          </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Manage Associations and Business Clients
-          </p>
+        <div className="flex items-center space-x-4">
+          <button 
+            type="button"
+            onClick={() => navigate('/dashboard')} 
+            className="p-2.5 rounded-xl border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors bg-white shrink-0 cursor-pointer"
+            title="Go to Dashboard"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold font-display text-slate-900 tracking-tight">
+              Sourcing Hub
+            </h1>
+            <p className="text-slate-500 text-xs mt-1">
+              Manage Associations and Business Clients
+            </p>
+          </div>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
